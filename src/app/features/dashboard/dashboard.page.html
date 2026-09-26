@@ -1,0 +1,68 @@
+<app-page-header
+  eyebrow="منصة ضامن"
+  title="لوحة التحكم"
+  subtitle="ملخص الأرصدة والعمليات المالية بين العملاء والموردين"
+>
+  <p-button label="تحديث" icon="pi pi-refresh" [outlined]="true" (onClick)="reload()" />
+  <a routerLink="/demo-wizard">
+    <p-button label="بدء رحلة جديدة" icon="pi pi-play" />
+  </a>
+</app-page-header>
+
+@if (loading()) {
+  <div class="loading-wrap">
+    <p-progressSpinner strokeWidth="4" />
+  </div>
+} @else if (stats(); as data) {
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-md-6 col-xl-3">
+      <div class="stat-card">
+        <div class="stat-card__label">العملاء</div>
+        <div class="stat-card__value">{{ data.customersCount }}</div>
+        <div class="stat-card__meta">إجمالي الأرصدة {{ data.customersBalanceTotal | sar }}</div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+      <div class="stat-card">
+        <div class="stat-card__label">الموردون</div>
+        <div class="stat-card__value">{{ data.suppliersCount }}</div>
+        <div class="stat-card__meta">إجمالي الأرصدة {{ data.suppliersBalanceTotal | sar }}</div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+      <div class="stat-card">
+        <div class="stat-card__label">عمليات الدفع</div>
+        <div class="stat-card__value">{{ data.paymentsCount }}</div>
+        <div class="stat-card__meta">مرجع دفع واحد قد يشمل عدة موردين</div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+      <div class="stat-card stat-card--accent">
+        <div class="stat-card__label">آخر حالة دفع</div>
+        @if (data.latestPayment; as payment) {
+          <div class="stat-card__value stat-card__value--sm">{{ payment.paymentReferenceId }}</div>
+          <div class="stat-card__meta">
+            <app-status-badge [status]="payment.overallStatus" />
+          </div>
+        } @else {
+          <div class="stat-card__value stat-card__value--sm">لا توجد عمليات بعد</div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>مسار العمل السريع</h2>
+    <ol class="flow-list">
+      <li>سجّل عميلًا وأودع في رصيده</li>
+      <li>سجّل موردًا وحدد حد الصرف</li>
+      <li>أنشئ دفعة بمرجع فريد من العميل إلى المورد</li>
+      <li>تابع حالة الدفع وتأثيرها على الأرصدة</li>
+    </ol>
+    <div class="d-flex gap-2 flex-wrap">
+      <a routerLink="/customers"><p-button label="إدارة العملاء" [outlined]="true" /></a>
+      <a routerLink="/suppliers"><p-button label="إدارة الموردين" [outlined]="true" /></a>
+      <a routerLink="/payments"><p-button label="إنشاء دفعة" /></a>
+    </div>
+  </div>
+}

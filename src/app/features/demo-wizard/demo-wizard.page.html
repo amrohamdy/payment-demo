@@ -1,0 +1,109 @@
+<app-page-header
+  eyebrow="عرض حي"
+  title="رحلة ضامن"
+  subtitle="مسار موجّه يغطي إنشاء عميل، إيداع، مورد، دفع، ثم متابعة الحالة"
+/>
+
+<div class="wizard-card">
+  <p-steps [model]="steps" [activeIndex]="activeIndex()" [readonly]="true" />
+
+  <div class="wizard-body">
+    @switch (activeIndex()) {
+      @case (0) {
+        <h2>1) إنشاء عميل</h2>
+        <form class="form-grid" [formGroup]="customerForm">
+          <label><span>الاسم</span><input pInputText formControlName="name" /></label>
+          <label><span>رقم الهوية</span><input pInputText formControlName="identityNumber" /></label>
+          <label><span>IBAN</span><input pInputText formControlName="iban" /></label>
+          <label><span>البريد</span><input pInputText formControlName="email" /></label>
+          <label><span>الجوال</span><input pInputText formControlName="mobile" /></label>
+        </form>
+        <div class="actions">
+          <p-button label="إنشاء والمتابعة" [loading]="busy()" (onClick)="createCustomerStep()" />
+        </div>
+      }
+      @case (1) {
+        <h2>2) إيداع في رصيد العميل</h2>
+        <form class="form-grid" [formGroup]="depositForm">
+          <label>
+            <span>المبلغ</span>
+            <p-inputNumber formControlName="amount" mode="decimal" [minFractionDigits]="2" />
+          </label>
+        </form>
+        @if (customerBalance() !== null) {
+          <p class="hint">الرصيد الحالي: {{ customerBalance() | sar }}</p>
+        }
+        <div class="actions">
+          <p-button label="رجوع" [text]="true" (onClick)="back()" />
+          <p-button label="إيداع والمتابعة" [loading]="busy()" (onClick)="depositStep()" />
+        </div>
+      }
+      @case (2) {
+        <h2>3) إنشاء مورد</h2>
+        <form class="form-grid" [formGroup]="supplierForm">
+          <label><span>الاسم</span><input pInputText formControlName="name" /></label>
+          <label><span>رقم الهوية</span><input pInputText formControlName="identityNumber" /></label>
+          <label><span>IBAN</span><input pInputText formControlName="iban" /></label>
+          <label><span>البريد</span><input pInputText formControlName="email" /></label>
+          <label><span>الجوال</span><input pInputText formControlName="mobile" /></label>
+          <label>
+            <span>حد الصرف</span>
+            <p-inputNumber formControlName="payoutThresholdAmount" mode="decimal" [minFractionDigits]="2" />
+          </label>
+        </form>
+        <div class="actions">
+          <p-button label="رجوع" [text]="true" (onClick)="back()" />
+          <p-button label="إنشاء والمتابعة" [loading]="busy()" (onClick)="createSupplierStep()" />
+        </div>
+      }
+      @case (3) {
+        <h2>4) إنشاء دفعة للمورد</h2>
+        <form class="form-grid" [formGroup]="paymentForm">
+          <label><span>مرجع الدفع</span><input pInputText formControlName="paymentReferenceId" /></label>
+          <label>
+            <span>العميل</span>
+            <p-select
+              formControlName="customerId"
+              [options]="customers()"
+              optionLabel="name"
+              optionValue="id"
+              styleClass="w-100"
+            />
+          </label>
+          <label>
+            <span>المورد</span>
+            <p-select
+              formControlName="supplierId"
+              [options]="suppliers()"
+              optionLabel="name"
+              optionValue="id"
+              styleClass="w-100"
+            />
+          </label>
+          <label>
+            <span>المبلغ</span>
+            <p-inputNumber formControlName="amount" mode="decimal" [minFractionDigits]="2" />
+          </label>
+        </form>
+        <div class="actions">
+          <p-button label="رجوع" [text]="true" (onClick)="back()" />
+          <p-button label="تنفيذ الدفعة" [loading]="busy()" (onClick)="paymentStep()" />
+        </div>
+      }
+      @default {
+        <h2>5) متابعة الحالة والأرصدة</h2>
+        <div class="summary">
+          <p>مرجع الدفع: <strong>{{ paymentReferenceId() }}</strong></p>
+          <p>رصيد العميل: <strong>{{ customerBalance() | sar }}</strong></p>
+          <p>رصيد المورد: <strong>{{ supplierBalance() | sar }}</strong></p>
+          <p class="hint">اضغط «تحديث الحالة» أكثر من مرة لمحاكاة انتقال Pending → Processing → Completed</p>
+        </div>
+        <div class="actions">
+          <p-button label="رجوع" [text]="true" (onClick)="back()" />
+          <p-button label="تحديث الحالة" icon="pi pi-sync" [loading]="busy()" (onClick)="refreshStatuses()" />
+          <p-button label="فتح تفاصيل الدفعة" icon="pi pi-external-link" (onClick)="goToPaymentDetails()" />
+        </div>
+      }
+    }
+  </div>
+</div>

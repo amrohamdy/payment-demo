@@ -1,0 +1,43 @@
+<aside class="sidebar">
+  <div class="sidebar__brand">
+    <div class="sidebar__brand-title">منصة ضامن</div>
+    <div class="sidebar__brand-sub">لوحة العمليات المالية</div>
+  </div>
+
+  @for (section of sections; track section.title) {
+    <div class="sidebar__section">
+      <div class="sidebar__section-title">{{ section.title }}</div>
+      <nav class="sidebar__nav">
+        @for (item of section.items; track item.route) {
+          <a
+            class="sidebar__link"
+            [routerLink]="item.route"
+            routerLinkActive="sidebar__link--active"
+          >
+            <i [class]="item.icon" aria-hidden="true"></i>
+            <span>{{ item.label }}</span>
+          </a>
+        }
+      </nav>
+    </div>
+  }
+
+  <div class="sidebar__footer">
+    <div class="sidebar__mode">
+      الوضع الحالي:
+      <strong>{{ apiMode === 'mock' ? 'Mock' : 'HTTP' }}</strong>
+    </div>
+    @if (apiMode === 'mock') {
+      <p-button
+        label="إعادة ضبط الديمو"
+        icon="pi pi-refresh"
+        severity="secondary"
+        [outlined]="true"
+        styleClass="w-100"
+        (onClick)="resetDemo()"
+      />
+    }
+  </div>
+</aside>
+
+<p-confirmDialog />

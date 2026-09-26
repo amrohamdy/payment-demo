@@ -1,0 +1,113 @@
+<app-page-header
+  eyebrow="إدارة الأطراف"
+  title="الموردون"
+  subtitle="إنشاء وتحديث الموردين ومتابعة الرصيد مقابل حد الصرف"
+>
+  <p-button label="تحديث" icon="pi pi-refresh" [outlined]="true" (onClick)="reload()" />
+  <p-button label="مورد جديد" icon="pi pi-plus" (onClick)="openCreate()" />
+</app-page-header>
+
+@if (loading()) {
+  <div class="loading-wrap"><p-progressSpinner strokeWidth="4" /></div>
+} @else if (suppliers().length === 0) {
+  <app-empty-state title="لا يوجد موردون" message="أضف موردًا لبدء عمليات الدفع">
+    <p-button label="إنشاء مورد" icon="pi pi-plus" (onClick)="openCreate()" />
+  </app-empty-state>
+} @else {
+  <div class="table-card">
+    <p-table [value]="suppliers()" [paginator]="true" [rows]="8" responsiveLayout="scroll">
+      <ng-template #header>
+        <tr>
+          <th>الاسم</th>
+          <th>رقم الهوية</th>
+          <th>الرصيد</th>
+          <th>حد الصرف</th>
+          <th>التقدم نحو الحد</th>
+          <th>إجراءات</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-supplier>
+        <tr>
+          <td>{{ supplier.name }}</td>
+          <td>{{ supplier.identityNumber }}</td>
+          <td>{{ supplier.balance | sar }}</td>
+          <td>{{ supplier.payoutThresholdAmount | sar }}</td>
+          <td>
+            <div class="threshold">
+              <p-progressBar [value]="progress(supplier)" [showValue]="false" styleClass="threshold__bar" />
+              <div class="threshold__meta">
+                <span>{{ progress(supplier) }}%</span>
+                @if (thresholdReached(supplier)) {
+                  <p-tag severity="success" value="بلغ حد الصرف" />
+                } @else {
+                  <p-tag severity="secondary" value="لم يبلغ الحد" />
+                }
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="actions">
+              <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" (onClick)="openEdit(supplier)" />
+              <p-button
+                icon="pi pi-wallet"
+                [rounded]="true"
+                [text]="true"
+                severity="info"
+                (onClick)="refreshBalance(supplier)"
+              />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+}
+
+<p-dialog
+  [header]="editMode() ? 'تعديل مورد' : 'إنشاء مورد'"
+  [visible]="formVisible()"
+  (visibleChange)="formVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: 'min(560px, 95vw)' }"
+  [draggable]="false"
+>
+  <form class="form-grid" [formGroup]="form">
+    <label>
+      <span>الاسم</span>
+      <input pInputText formControlName="name" />
+    </label>
+    <label>
+      <span>رقم الهوية / السجل</span>
+      <input pInputText formControlName="identityNumber" />
+    </label>
+    <label>
+      <span>IBAN</span>
+      <input pInputText formControlName="iban" />
+    </label>
+    <label>
+      <span>البريد الإلكتروني</span>
+      <input pInputText formControlName="email" type="email" />
+    </label>
+    <label>
+      <span>الجوال</span>
+      <input pInputText formControlName="mobile" />
+    </label>
+    <label>
+      <span>حد الصرف (payoutThresholdAmount)</span>
+      <p-inputNumber
+        formControlName="payoutThresholdAmount"
+        mode="decimal"
+        [minFractionDigits]="2"
+        [min]="0.01"
+      />
+    </label>
+  </form>
+  <ng-template #footer>
+    <p-button label="إلغاء" [text]="true" (onClick)="formVisible.set(false)" />
+    <p-button
+      [label]="editMode() ? 'حفظ التعديل' : 'إنشاء'"
+      [loading]="saving()"
+      (onClick)="saveSupplier()"
+    />
+  </ng-template>
+</p-dialog>

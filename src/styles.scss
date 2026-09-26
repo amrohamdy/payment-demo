@@ -1,0 +1,39 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --dh-primary: #16845b;
+  --dh-primary-soft: #eef5f1;
+  --dh-bg: #f5f7f9;
+  --dh-text: #0f172a;
+  --dh-muted: #64748b;
+  --dh-danger: #b42318;
+  --dh-danger-soft: #fef3f2;
+  --dh-success: #067647;
+  --dh-success-soft: #ecfdf3;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--dh-bg);
+  color: var(--dh-text);
+  font-family: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.w-100 {
+  width: 100%;
+}

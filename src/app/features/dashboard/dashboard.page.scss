@@ -1,0 +1,61 @@
+.loading-wrap {
+  display: grid;
+  place-items: center;
+  min-height: 240px;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.15rem 1.25rem;
+  border: 1px solid #e8eef3;
+  height: 100%;
+  box-shadow: 0 1px 2px rgb(16 24 40 / 4%);
+}
+
+.stat-card--accent {
+  border-color: #cfe5da;
+  background: linear-gradient(180deg, #f4faf7 0%, #fff 70%);
+}
+
+.stat-card__label {
+  color: var(--dh-muted);
+  font-size: 0.85rem;
+  margin-bottom: 0.35rem;
+}
+
+.stat-card__value {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--dh-text);
+}
+
+.stat-card__value--sm {
+  font-size: 1.1rem;
+  word-break: break-all;
+}
+
+.stat-card__meta {
+  margin-top: 0.5rem;
+  color: var(--dh-muted);
+  font-size: 0.85rem;
+}
+
+.panel {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.35rem 1.5rem;
+  border: 1px solid #e8eef3;
+}
+
+.panel h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.15rem;
+}
+
+.flow-list {
+  margin: 0 0 1.25rem;
+  padding-inline-start: 1.25rem;
+  color: #475569;
+  line-height: 1.8;
+}

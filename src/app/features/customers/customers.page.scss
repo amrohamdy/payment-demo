@@ -1,0 +1,44 @@
+.loading-wrap {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+}
+
+.table-card {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e8eef3;
+  overflow: hidden;
+}
+
+.actions {
+  display: flex;
+  gap: 0.15rem;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85rem;
+}
+
+.form-grid {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.form-grid label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.form-grid input,
+.form-grid :host ::ng-deep .p-inputnumber {
+  width: 100%;
+}
+
+.deposit-hint {
+  margin: 0 0 1rem;
+  color: var(--dh-muted);
+}

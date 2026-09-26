@@ -1,0 +1,128 @@
+<app-page-header
+  eyebrow="إدارة الأطراف"
+  title="العملاء"
+  subtitle="إنشاء وتحديث العملاء وإيداع الأموال في الرصيد"
+>
+  <p-button label="تحديث" icon="pi pi-refresh" [outlined]="true" (onClick)="reload()" />
+  <p-button label="عميل جديد" icon="pi pi-plus" (onClick)="openCreate()" />
+</app-page-header>
+
+@if (loading()) {
+  <div class="loading-wrap"><p-progressSpinner strokeWidth="4" /></div>
+} @else if (customers().length === 0) {
+  <app-empty-state title="لا يوجد عملاء" message="ابدأ بإنشاء أول عميل للديمو">
+    <p-button label="إنشاء عميل" icon="pi pi-plus" (onClick)="openCreate()" />
+  </app-empty-state>
+} @else {
+  <div class="table-card">
+    <p-table [value]="customers()" [paginator]="true" [rows]="8" responsiveLayout="scroll">
+      <ng-template #header>
+        <tr>
+          <th>الاسم</th>
+          <th>رقم الهوية</th>
+          <th>الجوال</th>
+          <th>IBAN</th>
+          <th>الرصيد</th>
+          <th>إجراءات</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-customer>
+        <tr>
+          <td>{{ customer.name }}</td>
+          <td>{{ customer.identityNumber }}</td>
+          <td>{{ customer.mobile }}</td>
+          <td class="mono">{{ customer.iban }}</td>
+          <td>{{ customer.balance | sar }}</td>
+          <td>
+            <div class="actions">
+              <p-button
+                icon="pi pi-pencil"
+                [rounded]="true"
+                [text]="true"
+                (onClick)="openEdit(customer)"
+                pTooltip="تعديل"
+              />
+              <p-button
+                icon="pi pi-plus-circle"
+                [rounded]="true"
+                [text]="true"
+                severity="success"
+                (onClick)="openDeposit(customer)"
+              />
+              <p-button
+                icon="pi pi-wallet"
+                [rounded]="true"
+                [text]="true"
+                severity="info"
+                (onClick)="refreshBalance(customer)"
+              />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+}
+
+<p-dialog
+  [header]="editMode() ? 'تعديل عميل' : 'إنشاء عميل'"
+  [visible]="formVisible()"
+  (visibleChange)="formVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: 'min(560px, 95vw)' }"
+  [draggable]="false"
+>
+  <form class="form-grid" [formGroup]="form" (ngSubmit)="saveCustomer()">
+    <label>
+      <span>رقم الهوية / الإقامة</span>
+      <input pInputText formControlName="identityNumber" />
+    </label>
+    <label>
+      <span>الاسم</span>
+      <input pInputText formControlName="name" />
+    </label>
+    <label>
+      <span>IBAN</span>
+      <input pInputText formControlName="iban" />
+    </label>
+    <label>
+      <span>البريد الإلكتروني</span>
+      <input pInputText formControlName="email" type="email" />
+    </label>
+    <label>
+      <span>الجوال</span>
+      <input pInputText formControlName="mobile" />
+    </label>
+  </form>
+  <ng-template #footer>
+    <p-button label="إلغاء" [text]="true" (onClick)="formVisible.set(false)" />
+    <p-button
+      [label]="editMode() ? 'حفظ التعديل' : 'إنشاء'"
+      [loading]="saving()"
+      (onClick)="saveCustomer()"
+    />
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  header="إيداع مبلغ"
+  [visible]="depositVisible()"
+  (visibleChange)="depositVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: 'min(420px, 95vw)' }"
+  [draggable]="false"
+>
+  @if (selectedCustomer(); as customer) {
+    <p class="deposit-hint">العميل: <strong>{{ customer.name }}</strong> — الرصيد الحالي {{ customer.balance | sar }}</p>
+  }
+  <form [formGroup]="depositForm" class="form-grid">
+    <label>
+      <span>المبلغ</span>
+      <p-inputNumber formControlName="amount" mode="decimal" [minFractionDigits]="2" [min]="0.01" />
+    </label>
+  </form>
+  <ng-template #footer>
+    <p-button label="إلغاء" [text]="true" (onClick)="depositVisible.set(false)" />
+    <p-button label="إيداع" icon="pi pi-check" [loading]="saving()" (onClick)="submitDeposit()" />
+  </ng-template>
+</p-dialog>
