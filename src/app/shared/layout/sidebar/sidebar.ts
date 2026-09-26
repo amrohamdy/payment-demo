@@ -44,10 +44,7 @@ export class Sidebar {
     },
     {
       title: 'العمليات المالية',
-      items: [
-        { label: 'المدفوعات', route: '/payments', icon: 'pi pi-wallet' },
-        { label: 'رحلة العرض', route: '/demo-wizard', icon: 'pi pi-sparkles' },
-      ],
+      items: [{ label: 'المدفوعات', route: '/payments', icon: 'pi pi-wallet' }],
     },
   ];
 
