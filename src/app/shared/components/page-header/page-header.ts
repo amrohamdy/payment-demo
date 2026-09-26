@@ -21,11 +21,14 @@ import { Component, input } from '@angular/core';
   styles: `
     .page-header {
       display: flex;
+      flex-direction: row;
       align-items: flex-start;
       justify-content: space-between;
       gap: 1rem;
       margin-bottom: 1.5rem;
       flex-wrap: wrap;
+      text-align: start;
+      direction: rtl;
     }
     .page-header__eyebrow {
       margin: 0 0 0.25rem;
@@ -45,6 +48,7 @@ import { Component, input } from '@angular/core';
     }
     .page-header__actions {
       display: flex;
+      flex-direction: row;
       gap: 0.75rem;
       flex-wrap: wrap;
       align-items: center;

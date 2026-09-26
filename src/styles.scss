@@ -14,6 +14,10 @@
   --dh-success-soft: #ecfdf3;
 }
 
+html {
+  direction: rtl;
+}
+
 html,
 body {
   height: 100%;
@@ -21,6 +25,11 @@ body {
   background: var(--dh-bg);
   color: var(--dh-text);
   font-family: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+  text-align: start;
+}
+
+body {
+  direction: rtl;
 }
 
 a {
@@ -36,4 +45,25 @@ textarea {
 
 .w-100 {
   width: 100%;
+}
+
+/* Keep PrimeNG overlays / menus aligned for RTL */
+.p-component,
+.p-datatable,
+.p-dialog,
+.p-toast,
+.p-select,
+.p-inputnumber,
+.p-inputtext,
+.p-button,
+.p-tag,
+.p-steps,
+.p-confirmdialog {
+  direction: rtl;
+  text-align: start;
+}
+
+.p-datatable .p-datatable-thead > tr > th,
+.p-datatable .p-datatable-tbody > tr > td {
+  text-align: start;
 }

@@ -5,10 +5,14 @@ import { RouterOutlet } from '@angular/router';
   selector: 'app-root',
   imports: [RouterOutlet],
   template: `<router-outlet />`,
+  host: {
+    dir: 'rtl',
+  },
   styles: `
     :host {
       display: block;
       min-height: 100vh;
+      direction: rtl;
     }
   `,
 })
