@@ -87,9 +87,9 @@ export class CustomersPage implements OnInit {
 
   reload(): void {
     this.loading.set(true);
-    this.api.listCustomers().subscribe({
-      next: (items) => {
-        this.customers.set(items);
+    this.api.listCustomers({ page: 1, pageSize: 200 }).subscribe({
+      next: (page) => {
+        this.customers.set(page.items);
         this.loading.set(false);
       },
       error: (err: Error) => {

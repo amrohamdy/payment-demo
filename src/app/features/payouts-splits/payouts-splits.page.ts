@@ -1,4 +1,4 @@
-import { DatePipe, JsonPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -44,7 +44,6 @@ interface CustomerOption {
     StatusBadge,
     SarPipe,
     DatePipe,
-    JsonPipe,
     Button,
     Dialog,
     InputNumber,
@@ -130,13 +129,13 @@ export class PayoutsSplitsPage implements OnInit {
     this.loading.set(true);
     forkJoin({
       payments: this.api.listPayments(),
-      customers: this.api.listCustomers(),
-      suppliers: this.api.listSuppliers(),
+      customers: this.api.listCustomers({ page: 1, pageSize: 200 }),
+      suppliers: this.api.listSuppliers({ page: 1, pageSize: 200 }),
     }).subscribe({
       next: ({ payments, customers, suppliers }) => {
         this.payments.set(payments);
-        this.customers.set(customers);
-        this.suppliers.set(suppliers);
+        this.customers.set(customers.items);
+        this.suppliers.set(suppliers.items);
         this.loading.set(false);
         this.openFromQuery();
       },
@@ -154,14 +153,15 @@ export class PayoutsSplitsPage implements OnInit {
     this.formVisible.set(true);
   }
 
-  /** Handles `?supplierId=` from the Suppliers list "Pay supplier" action. */
+  /** Handles `?create=1` and `?supplierId=` (from Payments hub / Suppliers). */
   private openFromQuery(): void {
+    const create = this.route.snapshot.queryParamMap.get('create') === '1';
     const supplierId = this.route.snapshot.queryParamMap.get('supplierId');
-    if (!supplierId) {
+    if (!create && !supplierId) {
       return;
     }
-    const known = this.suppliers().some((s) => s.id === supplierId);
-    this.openCreate(known ? supplierId : null);
+    const known = supplierId ? this.suppliers().some((s) => s.id === supplierId) : false;
+    this.openCreate(known && supplierId ? supplierId : null);
     this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true });
   }
 
@@ -214,7 +214,7 @@ export class PayoutsSplitsPage implements OnInit {
         this.messages.add({
           severity: 'info',
           summary: `Status · ${payment.paymentReferenceId}`,
-          detail: statuses.map((s) => `${names.get(s.supplierId) ?? s.supplierId}: ${s.status}`).join(' · '),
+          detail: statuses.map((s) => `${names.get(s.supplierId ?? '') ?? s.supplierId}: ${s.status}`).join(' · '),
         });
         this.reload();
       },

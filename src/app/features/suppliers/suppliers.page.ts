@@ -82,9 +82,9 @@ export class SuppliersPage implements OnInit {
 
   reload(): void {
     this.loading.set(true);
-    this.api.listSuppliers().subscribe({
-      next: (items) => {
-        this.suppliers.set(items);
+    this.api.listSuppliers({ page: 1, pageSize: 200 }).subscribe({
+      next: (page) => {
+        this.suppliers.set(page.items);
         this.loading.set(false);
       },
       error: (err: Error) => {

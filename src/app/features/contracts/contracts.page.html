@@ -1,0 +1,213 @@
+<app-page-header
+  eyebrow="Escrow & Contracts"
+  title="Contracts"
+  subtitle="Escrow contracts with fee percentages and payment schedules."
+>
+  <p-button label="Refresh" icon="pi pi-refresh" [outlined]="true" (onClick)="reload()" />
+  <p-button label="New contract" icon="pi pi-plus" (onClick)="openCreate()" />
+</app-page-header>
+
+@if (loading()) {
+  <div class="loading-wrap"><p-progressSpinner strokeWidth="4" /></div>
+} @else if (contracts().length === 0) {
+  <app-empty-state title="No contracts" message="Create a contract after setting up an escrow account.">
+    <p-button label="Create contract" icon="pi pi-plus" (onClick)="openCreate()" />
+  </app-empty-state>
+} @else {
+  <div class="table-card">
+    <p-table [value]="contracts()" [paginator]="true" [rows]="8" responsiveLayout="scroll">
+      <ng-template #header>
+        <tr>
+          <th>Number</th>
+          <th>Total</th>
+          <th>Fees</th>
+          <th>Escrow</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-contract>
+        <tr>
+          <td class="mono">{{ contract.contractNumber }}</td>
+          <td>{{ contract.totalAmount | sar }}</td>
+          <td class="muted">
+            P {{ contract.penaltyPercentage }}% · SCE {{ contract.sceFeePercentage }}% · VAT
+            {{ contract.vatPercentage }}%
+          </td>
+          <td>{{ escrowName(contract.escrowAccountId) }}</td>
+          <td>
+            <div class="actions">
+              <p-button icon="pi pi-list" [rounded]="true" [text]="true" (onClick)="openSchedule(contract)" />
+              <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" (onClick)="openEdit(contract)" />
+              <p-button
+                icon="pi pi-trash"
+                [rounded]="true"
+                [text]="true"
+                severity="danger"
+                (onClick)="removeContract(contract)"
+              />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+}
+
+<p-dialog
+  [header]="editMode() ? 'Edit contract' : 'New contract'"
+  [visible]="formVisible()"
+  (visibleChange)="formVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: 'min(560px, 95vw)' }"
+  [draggable]="false"
+  styleClass="umran-dialog"
+>
+  <form [formGroup]="form" class="form-grid">
+    <label>
+      <span>Contract number</span>
+      <input pInputText formControlName="contractNumber" />
+    </label>
+    <label>
+      <span>Total amount</span>
+      <p-inputNumber formControlName="totalAmount" mode="decimal" [minFractionDigits]="2" styleClass="w-100" />
+    </label>
+    <div class="grid-2">
+      <label>
+        <span>Penalty %</span>
+        <p-inputNumber formControlName="penaltyPercentage" [min]="0" [max]="100" styleClass="w-100" />
+      </label>
+      <label>
+        <span>SCE fee %</span>
+        <p-inputNumber formControlName="sceFeePercentage" [min]="0" [max]="100" styleClass="w-100" />
+      </label>
+      <label>
+        <span>Moatamed fee %</span>
+        <p-inputNumber formControlName="moatamedFeePercentage" [min]="0" [max]="100" styleClass="w-100" />
+      </label>
+      <label>
+        <span>VAT %</span>
+        <p-inputNumber formControlName="vatPercentage" [min]="0" [max]="100" styleClass="w-100" />
+      </label>
+    </div>
+    <label>
+      <span>Escrow account</span>
+      <p-select
+        formControlName="escrowAccountId"
+        [options]="escrowAccounts()"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Optional"
+        [showClear]="true"
+        appendTo="body"
+        styleClass="w-100"
+      />
+    </label>
+  </form>
+  <ng-template #footer>
+    <p-button label="Cancel" [text]="true" (onClick)="formVisible.set(false)" />
+    <p-button label="Save" icon="pi pi-check" [loading]="saving()" (onClick)="saveContract()" />
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  [header]="'Schedule · ' + (selected()?.contractNumber ?? '')"
+  [visible]="scheduleVisible()"
+  (visibleChange)="scheduleVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: 'min(820px, 96vw)' }"
+  [draggable]="false"
+  styleClass="umran-dialog"
+>
+  <div class="schedule-summary">
+    <p-tag
+      [severity]="schedulePercentOk() ? 'success' : 'warn'"
+      [value]="'% sum: ' + (schedulePercentSum() | number: '1.0-2')"
+    />
+    <p-tag
+      [severity]="scheduleAmountOk() ? 'success' : 'warn'"
+      [value]="'Amount sum: ' + (scheduleAmountSum() | number: '1.2-2')"
+    />
+    @if (!schedulePercentOk()) {
+      <span class="hint warn">Percentages should total 100%.</span>
+    }
+    @if (!scheduleAmountOk()) {
+      <span class="hint warn">Amounts should match contract total.</span>
+    }
+  </div>
+
+  <div class="table-card mb-3">
+    <p-table [value]="scheduleLines()" responsiveLayout="scroll">
+      <ng-template #header>
+        <tr>
+          <th>#</th>
+          <th>Title</th>
+          <th>%</th>
+          <th>Amount</th>
+          <th>Due</th>
+          <th></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-line>
+        <tr>
+          <td>{{ line.sequenceNo }}</td>
+          <td>{{ line.title }}</td>
+          <td>{{ line.percentage }}</td>
+          <td>{{ line.amount | sar }}</td>
+          <td>{{ line.dueDate }}</td>
+          <td>
+            <div class="actions">
+              <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" (onClick)="openLineEdit(line)" />
+              <p-button
+                icon="pi pi-trash"
+                [rounded]="true"
+                [text]="true"
+                severity="danger"
+                (onClick)="removeLine(line)"
+              />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <form [formGroup]="lineForm" class="form-grid">
+    <div class="grid-2">
+      <label>
+        <span>Sequence</span>
+        <p-inputNumber formControlName="sequenceNo" [min]="1" styleClass="w-100" />
+      </label>
+      <label>
+        <span>Due date</span>
+        <input pInputText type="date" formControlName="dueDate" />
+      </label>
+    </div>
+    <label>
+      <span>Title</span>
+      <input pInputText formControlName="title" />
+    </label>
+    <div class="grid-2">
+      <label>
+        <span>Percentage</span>
+        <p-inputNumber formControlName="percentage" [min]="0" [max]="100" styleClass="w-100" />
+      </label>
+      <label>
+        <span>Amount</span>
+        <p-inputNumber formControlName="amount" mode="decimal" [minFractionDigits]="2" styleClass="w-100" />
+      </label>
+    </div>
+    <div class="actions">
+      <p-button
+        [label]="lineEditMode() ? 'Update line' : 'Add line'"
+        icon="pi pi-plus"
+        [loading]="saving()"
+        (onClick)="saveLine()"
+      />
+      @if (lineEditMode()) {
+        <p-button label="New line" [outlined]="true" (onClick)="openLineCreate()" />
+      }
+    </div>
+  </form>
+</p-dialog>
+
+<p-confirmDialog />

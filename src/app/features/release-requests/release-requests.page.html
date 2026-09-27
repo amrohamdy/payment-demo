@@ -1,0 +1,160 @@
+<app-page-header
+  eyebrow="Releases & Payouts"
+  title="Release requests"
+  subtitle="One release per schedule line. Approve, reject, and attach penalties when needed."
+>
+  <p-button label="Refresh" icon="pi pi-refresh" [outlined]="true" (onClick)="reload()" />
+  <p-button label="New request" icon="pi pi-plus" (onClick)="openCreate()" />
+</app-page-header>
+
+@if (loading()) {
+  <div class="loading-wrap"><p-progressSpinner strokeWidth="4" /></div>
+} @else if (requests().length === 0) {
+  <app-empty-state
+    title="No release requests"
+    message="Create a request against a payment schedule line from a contract."
+  >
+    <p-button label="Create request" icon="pi pi-plus" (onClick)="openCreate()" />
+  </app-empty-state>
+} @else {
+  <div class="table-card">
+    <p-table [value]="requests()" [paginator]="true" [rows]="10" responsiveLayout="scroll">
+      <ng-template #header>
+        <tr>
+          <th>Schedule line</th>
+          <th>Date</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Penalty</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-request>
+        <tr>
+          <td>{{ lineTitle(request.scheduleLineId) }}</td>
+          <td>{{ request.requestDate }}</td>
+          <td>{{ request.requestedAmount | sar }}</td>
+          <td>
+            <p-tag [severity]="statusSeverity(request.status)" [value]="statusLabel(request.status)" />
+          </td>
+          <td>
+            @if (request.hasPenalty) {
+              @if (penaltyFor(request.id); as penalty) {
+                {{ penalty.penaltyAmount | sar }} ({{ penalty.daysLate }}d)
+              } @else {
+                <span class="muted">Pending setup</span>
+              }
+            } @else {
+              —
+            }
+          </td>
+          <td>
+            <div class="actions">
+              <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" (onClick)="openEdit(request)" />
+              <p-button
+                icon="pi pi-exclamation-triangle"
+                [rounded]="true"
+                [text]="true"
+                severity="warn"
+                (onClick)="openPenalty(request)"
+              />
+              <p-button
+                icon="pi pi-trash"
+                [rounded]="true"
+                [text]="true"
+                severity="danger"
+                (onClick)="remove(request)"
+              />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+}
+
+<p-dialog
+  [header]="editMode() ? 'Edit release request' : 'New release request'"
+  [visible]="formVisible()"
+  (visibleChange)="formVisible.set($event); form.controls.scheduleLineId.enable()"
+  [modal]="true"
+  [style]="{ width: 'min(520px, 95vw)' }"
+  [draggable]="false"
+  styleClass="umran-dialog"
+>
+  <form [formGroup]="form" class="form-grid">
+    <label>
+      <span>Schedule line</span>
+      <p-select
+        formControlName="scheduleLineId"
+        [options]="availableLines()"
+        optionLabel="title"
+        optionValue="id"
+        appendTo="body"
+        styleClass="w-100"
+      />
+    </label>
+    <label>
+      <span>Request date</span>
+      <input pInputText type="date" formControlName="requestDate" />
+    </label>
+    <label>
+      <span>Requested amount</span>
+      <p-inputNumber formControlName="requestedAmount" mode="decimal" [minFractionDigits]="2" styleClass="w-100" />
+    </label>
+    <label>
+      <span>Status</span>
+      <p-select
+        formControlName="status"
+        [options]="statusOptions"
+        optionLabel="label"
+        optionValue="value"
+        appendTo="body"
+        styleClass="w-100"
+      />
+    </label>
+    <label class="check-row">
+      <p-checkbox formControlName="hasPenalty" [binary]="true" inputId="hasPenalty" />
+      <span>Has penalty</span>
+    </label>
+  </form>
+  <ng-template #footer>
+    <p-button label="Cancel" [text]="true" (onClick)="formVisible.set(false)" />
+    <p-button label="Save" icon="pi pi-check" [loading]="saving()" (onClick)="save()" />
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  header="Release penalty"
+  [visible]="penaltyVisible()"
+  (visibleChange)="penaltyVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: 'min(480px, 95vw)' }"
+  [draggable]="false"
+  styleClass="umran-dialog"
+>
+  <form [formGroup]="penaltyForm" class="form-grid">
+    <label>
+      <span>Penalty amount</span>
+      <p-inputNumber formControlName="penaltyAmount" mode="decimal" [minFractionDigits]="2" styleClass="w-100" />
+    </label>
+    <label>
+      <span>Penalty %</span>
+      <p-inputNumber formControlName="penaltyPercentage" [min]="0" [max]="100" styleClass="w-100" />
+    </label>
+    <label>
+      <span>Days late</span>
+      <p-inputNumber formControlName="daysLate" [min]="1" styleClass="w-100" />
+    </label>
+    <label>
+      <span>Reason</span>
+      <input pInputText formControlName="reason" />
+    </label>
+  </form>
+  <ng-template #footer>
+    <p-button label="Cancel" [text]="true" (onClick)="penaltyVisible.set(false)" />
+    <p-button label="Save penalty" icon="pi pi-check" [loading]="saving()" (onClick)="savePenalty()" />
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog />

@@ -38,8 +38,8 @@ describe('MockDhamenApi', () => {
   it('rejects payment when customer balance is insufficient', async () => {
     const customers = await firstValueFrom(api.listCustomers());
     const suppliers = await firstValueFrom(api.listSuppliers());
-    const customer = customers[0];
-    const supplier = suppliers[0];
+    const customer = customers.items[0];
+    const supplier = suppliers.items[0];
 
     await expect(
       firstValueFrom(
@@ -60,8 +60,8 @@ describe('MockDhamenApi', () => {
   it('creates payment, updates balances, and advances status', async () => {
     const customers = await firstValueFrom(api.listCustomers());
     const suppliers = await firstValueFrom(api.listSuppliers());
-    const customer = customers[0];
-    const supplier = suppliers[0];
+    const customer = customers.items[0];
+    const supplier = suppliers.items[0];
     const amount = 100;
     const customerBefore = customer.balance;
     const supplierBefore = supplier.balance;
@@ -99,7 +99,7 @@ describe('MockDhamenApi', () => {
 
   it('supports platform-funded payment when customerId is null', async () => {
     const suppliers = await firstValueFrom(api.listSuppliers());
-    const supplier = suppliers[0];
+    const supplier = suppliers.items[0];
     const before = supplier.balance;
 
     await firstValueFrom(

@@ -1,0 +1,119 @@
+<app-page-header
+  eyebrow="Collections"
+  title="Payment links"
+  subtitle="Create shareable payment links, poll status, and cancel when needed."
+>
+  <p-button label="Refresh" icon="pi pi-refresh" [outlined]="true" (onClick)="reload()" />
+  <p-button label="New link" icon="pi pi-plus" (onClick)="openCreate()" />
+</app-page-header>
+
+@if (loading()) {
+  <div class="loading-wrap"><p-progressSpinner strokeWidth="4" /></div>
+} @else if (links().length === 0) {
+  <app-empty-state title="No payment links" message="Create a link for a customer to collect funds.">
+    <p-button label="Create link" icon="pi pi-plus" (onClick)="openCreate()" />
+  </app-empty-state>
+} @else {
+  <div class="table-card">
+    <p-table [value]="links()" [paginator]="true" [rows]="10" responsiveLayout="scroll">
+      <ng-template #header>
+        <tr>
+          <th>Reference</th>
+          <th>Customer</th>
+          <th>Amount</th>
+          <th>Expires (min)</th>
+          <th>URL</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-link>
+        <tr>
+          <td class="mono">{{ link.paymentReferenceId }}</td>
+          <td>{{ customerName(link.customerId) }}</td>
+          <td>{{ link.amount | sar }}</td>
+          <td>{{ link.expiresInMinutes ?? '—' }}</td>
+          <td class="mono url">{{ link.paymentUrl || '—' }}</td>
+          <td>
+            <div class="actions">
+              <p-button icon="pi pi-copy" [rounded]="true" [text]="true" (onClick)="copyUrl(link)" />
+              <p-button icon="pi pi-sync" [rounded]="true" [text]="true" (onClick)="checkStatus(link)" />
+              <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" (onClick)="openEdit(link)" />
+              <p-button
+                icon="pi pi-ban"
+                [rounded]="true"
+                [text]="true"
+                severity="warn"
+                (onClick)="cancelLink(link)"
+              />
+              <p-button
+                icon="pi pi-trash"
+                [rounded]="true"
+                [text]="true"
+                severity="danger"
+                (onClick)="remove(link)"
+              />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+}
+
+<p-dialog
+  [header]="editMode() ? 'Edit payment link' : 'New payment link'"
+  [visible]="formVisible()"
+  (visibleChange)="formVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: 'min(520px, 95vw)' }"
+  [draggable]="false"
+  styleClass="umran-dialog"
+>
+  <form [formGroup]="form" class="form-grid">
+    <label>
+      <span>Payment reference</span>
+      <input pInputText formControlName="paymentReferenceId" />
+    </label>
+    <label>
+      <span>Customer</span>
+      <p-select
+        formControlName="customerId"
+        [options]="customers()"
+        optionLabel="name"
+        optionValue="id"
+        appendTo="body"
+        styleClass="w-100"
+      />
+    </label>
+    <label>
+      <span>Amount</span>
+      <p-inputNumber formControlName="amount" mode="decimal" [minFractionDigits]="2" styleClass="w-100" />
+    </label>
+    <label>
+      <span>Expires in minutes</span>
+      <p-inputNumber formControlName="expiresInMinutes" [min]="1" styleClass="w-100" />
+    </label>
+    <label>
+      <span>Supplier (optional)</span>
+      <p-select
+        formControlName="supplierId"
+        [options]="suppliers()"
+        optionLabel="name"
+        optionValue="id"
+        [showClear]="true"
+        appendTo="body"
+        styleClass="w-100"
+      />
+    </label>
+    <label>
+      <span>Payment URL (optional)</span>
+      <input pInputText formControlName="paymentUrl" />
+    </label>
+  </form>
+  <ng-template #footer>
+    <p-button label="Cancel" [text]="true" (onClick)="formVisible.set(false)" />
+    <p-button label="Save" icon="pi pi-check" [loading]="saving()" (onClick)="save()" />
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog />

@@ -1,7 +1,7 @@
 <app-page-header
   eyebrow="Overview"
   title="Dashboard"
-  subtitle="A summary of customer and supplier balances and payment activity."
+  subtitle="Balances, escrow contracts, collections, and recent demo activity."
 >
   <p-button label="Refresh" icon="pi pi-refresh" [outlined]="true" (onClick)="reload()" />
 </app-page-header>
@@ -14,52 +14,82 @@
   <div class="row g-3 mb-4">
     <div class="col-12 col-md-6 col-xl-3">
       <div class="stat-card">
-        <div class="stat-card__label">Total customers</div>
+        <div class="stat-card__label">Customers</div>
         <div class="stat-card__value">{{ data.customersCount }}</div>
-        <div class="stat-card__meta">Combined balance {{ data.customersBalanceTotal | sar }}</div>
+        <div class="stat-card__meta">Balance {{ data.customersBalanceTotal | sar }}</div>
       </div>
     </div>
     <div class="col-12 col-md-6 col-xl-3">
       <div class="stat-card">
-        <div class="stat-card__label">Total suppliers</div>
+        <div class="stat-card__label">Suppliers</div>
         <div class="stat-card__value">{{ data.suppliersCount }}</div>
-        <div class="stat-card__meta">Combined balance {{ data.suppliersBalanceTotal | sar }}</div>
+        <div class="stat-card__meta">Balance {{ data.suppliersBalanceTotal | sar }}</div>
       </div>
     </div>
     <div class="col-12 col-md-6 col-xl-3">
       <div class="stat-card">
-        <div class="stat-card__label">Payments</div>
-        <div class="stat-card__value">{{ data.paymentsCount }}</div>
-        <div class="stat-card__meta">One reference may include multiple suppliers</div>
+        <div class="stat-card__label">Contracts</div>
+        <div class="stat-card__value">{{ data.contractsCount }}</div>
+        <div class="stat-card__meta">{{ data.releaseRequestsCount }} release requests</div>
       </div>
     </div>
     <div class="col-12 col-md-6 col-xl-3">
       <div class="stat-card stat-card--accent">
-        <div class="stat-card__label">Latest payment status</div>
-        @if (data.latestPayment; as payment) {
-          <div class="stat-card__value stat-card__value--sm">{{ payment.paymentReferenceId }}</div>
-          <div class="stat-card__meta">
-            <app-status-badge [status]="payment.overallStatus" />
-          </div>
-        } @else {
-          <div class="stat-card__value stat-card__value--sm">No payments yet</div>
-        }
+        <div class="stat-card__label">Collections</div>
+        <div class="stat-card__value">{{ data.paymentLinksCount }}</div>
+        <div class="stat-card__meta">{{ data.paymentsCount }} payout records</div>
       </div>
     </div>
   </div>
 
-  <div class="panel">
-    <h2>Quick workflow</h2>
-    <ol class="flow-list">
-      <li>Create a customer and deposit funds into their balance.</li>
-      <li>Create a supplier and define the payout threshold.</li>
-      <li>Create a payment with a unique reference.</li>
-      <li>Track payment status and its effect on balances.</li>
-    </ol>
-    <div class="d-flex gap-2 flex-wrap">
-      <a routerLink="/customers"><p-button label="Manage customers" [outlined]="true" /></a>
-      <a routerLink="/suppliers"><p-button label="Manage suppliers" [outlined]="true" /></a>
-      <a routerLink="/payments"><p-button label="Create payment" /></a>
+  @if (authorityBalance() !== null) {
+    <div class="panel mb-3">
+      <strong>Authority VA balance:</strong> {{ authorityBalance() | sar }}
+    </div>
+  }
+
+  <div class="row g-3">
+    <div class="col-12 col-lg-6">
+      <div class="panel">
+        <h2>End-to-end flow</h2>
+        <ol class="flow-list">
+          <li>Create parties and fund a customer.</li>
+          <li>Create an escrow account and contract schedule.</li>
+          <li>Collect via payment link / customer / SADAD payment.</li>
+          <li>Raise a release request, then pay out suppliers.</li>
+        </ol>
+        <div class="d-flex gap-2 flex-wrap">
+          <a routerLink="/demo-wizard"><p-button label="Run demo wizard" /></a>
+          <a routerLink="/contracts"><p-button label="Contracts" [outlined]="true" /></a>
+          <a routerLink="/settings"><p-button label="API settings" [outlined]="true" /></a>
+        </div>
+        <p class="muted mt-2">API: {{ health.status() }} — {{ health.detail() }}</p>
+      </div>
+    </div>
+    <div class="col-12 col-lg-6">
+      <div class="panel">
+        <h2>Latest activity</h2>
+        @if (activity().length === 0) {
+          <p class="muted">No activity yet.</p>
+        } @else {
+          <ul class="activity-list">
+            @for (item of activity(); track item.id) {
+              <li>
+                <div class="activity-list__title">{{ item.summary }}</div>
+                <div class="activity-list__meta">
+                  {{ item.kind }} · {{ item.reference }} · {{ item.at | date: 'short' }}
+                </div>
+              </li>
+            }
+          </ul>
+        }
+        @if (data.latestPayment; as payment) {
+          <div class="latest-payment">
+            <span class="mono">{{ payment.paymentReferenceId }}</span>
+            <app-status-badge [status]="payment.overallStatus" />
+          </div>
+        }
+      </div>
     </div>
   </div>
 }

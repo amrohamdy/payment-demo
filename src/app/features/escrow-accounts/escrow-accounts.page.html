@@ -1,0 +1,92 @@
+<app-page-header
+  eyebrow="Escrow & Contracts"
+  title="Escrow accounts"
+  subtitle="Virtual accounts (VIBAN/BBAN) linked to authority, customers, or suppliers."
+>
+  <p-button label="Refresh" icon="pi pi-refresh" [outlined]="true" (onClick)="reload()" />
+  <p-button label="New account" icon="pi pi-plus" (onClick)="openCreate()" />
+</app-page-header>
+
+@if (loading()) {
+  <div class="loading-wrap"><p-progressSpinner strokeWidth="4" /></div>
+} @else if (accounts().length === 0) {
+  <app-empty-state title="No escrow accounts" message="Create an escrow account to attach contracts.">
+    <p-button label="Create account" icon="pi pi-plus" (onClick)="openCreate()" />
+  </app-empty-state>
+} @else {
+  <div class="table-card">
+    <p-table [value]="accounts()" [paginator]="true" [rows]="10" responsiveLayout="scroll">
+      <ng-template #header>
+        <tr>
+          <th>Name</th>
+          <th>Holder</th>
+          <th>VIBAN</th>
+          <th>BBAN</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-account>
+        <tr>
+          <td>{{ account.name }}</td>
+          <td>{{ holderLabel(account.holderType) }}</td>
+          <td class="mono">{{ account.viban }}</td>
+          <td class="mono">{{ account.bban }}</td>
+          <td>
+            <div class="actions">
+              <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" (onClick)="openEdit(account)" />
+              <p-button
+                icon="pi pi-trash"
+                [rounded]="true"
+                [text]="true"
+                severity="danger"
+                (onClick)="remove(account)"
+              />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+}
+
+<p-dialog
+  [header]="editMode() ? 'Edit escrow account' : 'New escrow account'"
+  [visible]="formVisible()"
+  (visibleChange)="formVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: 'min(480px, 95vw)' }"
+  [draggable]="false"
+  styleClass="umran-dialog"
+>
+  <form [formGroup]="form" class="form-grid" (ngSubmit)="save()">
+    <label>
+      <span>Holder type</span>
+      <p-select
+        formControlName="holderType"
+        [options]="holderOptions"
+        optionLabel="label"
+        optionValue="value"
+        appendTo="body"
+        styleClass="w-100"
+      />
+    </label>
+    <label>
+      <span>Name</span>
+      <input pInputText formControlName="name" />
+    </label>
+    <label>
+      <span>VIBAN</span>
+      <input pInputText formControlName="viban" />
+    </label>
+    <label>
+      <span>BBAN</span>
+      <input pInputText formControlName="bban" />
+    </label>
+  </form>
+  <ng-template #footer>
+    <p-button label="Cancel" [text]="true" (onClick)="formVisible.set(false)" />
+    <p-button label="Save" icon="pi pi-check" [loading]="saving()" (onClick)="save()" />
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog />

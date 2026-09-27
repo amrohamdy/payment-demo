@@ -43,6 +43,7 @@ export const appConfig: ApplicationConfig = {
         },
       },
       ripple: true,
+      overlayAppendTo: 'body',
     }),
     MessageService,
     ConfirmationService,

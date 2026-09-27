@@ -1,0 +1,30 @@
+:host {
+  display: block;
+}
+
+.form-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.form-grid label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  color: var(--dh-muted);
+}
+
+.form-grid input,
+.form-grid .p-select {
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  gap: 0.15rem;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78rem;
+}

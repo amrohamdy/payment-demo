@@ -1,0 +1,47 @@
+:host {
+  display: block;
+}
+
+.panel {
+  background: var(--dh-surface);
+  border: 1px solid var(--dh-border);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.muted {
+  color: var(--dh-muted);
+  font-size: 0.82rem;
+}
+
+.form-grid {
+  display: grid;
+  gap: 0.9rem;
+  max-width: 520px;
+}
+
+.form-grid label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  color: var(--dh-muted);
+}
+
+.hint {
+  margin-top: 1.25rem;
+  color: var(--dh-muted);
+  font-size: 0.8rem;
+  max-width: 640px;
+}
+
+.actions {
+  margin-top: 0.25rem;
+}

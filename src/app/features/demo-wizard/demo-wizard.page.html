@@ -1,7 +1,7 @@
 <app-page-header
   eyebrow="Live demo"
-  title="Dhamen workflow"
-  subtitle="A guided flow covering customer creation, deposit, supplier payment, and status tracking."
+  title="End-to-end Dhamen flow"
+  subtitle="Parties → Escrow → Contract/Schedule → Collect → Release → Supplier payout."
 />
 
 <div class="wizard-card">
@@ -10,100 +10,124 @@
   <div class="wizard-body">
     @switch (activeIndex()) {
       @case (0) {
-        <h2>1) Create customer</h2>
-        <form class="form-grid" [formGroup]="customerForm">
-          <label><span>Name</span><input pInputText formControlName="name" /></label>
-          <label><span>Identity number</span><input pInputText formControlName="identityNumber" /></label>
-          <label><span>IBAN</span><input pInputText formControlName="iban" /></label>
-          <label><span>Email</span><input pInputText formControlName="email" /></label>
-          <label><span>Mobile</span><input pInputText formControlName="mobile" /></label>
-        </form>
+        <h2>1) Parties + deposit</h2>
+        <div class="two-col">
+          <form class="form-grid" [formGroup]="customerForm">
+            <h3>Customer</h3>
+            <label><span>Name</span><input pInputText formControlName="name" /></label>
+            <label><span>Identity</span><input pInputText formControlName="identityNumber" /></label>
+            <label><span>IBAN</span><input pInputText formControlName="iban" /></label>
+            <label><span>Email</span><input pInputText formControlName="email" /></label>
+            <label><span>Mobile</span><input pInputText formControlName="mobile" /></label>
+            <label>
+              <span>Deposit</span>
+              <p-inputNumber formControlName="depositAmount" mode="decimal" [minFractionDigits]="2" />
+            </label>
+          </form>
+          <form class="form-grid" [formGroup]="supplierForm">
+            <h3>Supplier</h3>
+            <label><span>Name</span><input pInputText formControlName="name" /></label>
+            <label><span>Identity</span><input pInputText formControlName="identityNumber" /></label>
+            <label><span>IBAN</span><input pInputText formControlName="iban" /></label>
+            <label><span>Email</span><input pInputText formControlName="email" /></label>
+            <label><span>Mobile</span><input pInputText formControlName="mobile" /></label>
+            <label>
+              <span>Threshold</span>
+              <p-inputNumber formControlName="payoutThresholdAmount" mode="decimal" [minFractionDigits]="2" />
+            </label>
+          </form>
+        </div>
         <div class="actions">
-          <p-button label="Create and continue" [loading]="busy()" (onClick)="createCustomerStep()" />
+          <p-button label="Create parties & deposit" [loading]="busy()" (onClick)="createParties()" />
         </div>
       }
       @case (1) {
-        <h2>2) Deposit customer funds</h2>
-        <form class="form-grid" [formGroup]="depositForm">
+        <h2>2) Escrow account</h2>
+        <form class="form-grid" [formGroup]="escrowForm">
+          <label><span>Name</span><input pInputText formControlName="name" /></label>
+          <label><span>VIBAN</span><input pInputText formControlName="viban" /></label>
+          <label><span>BBAN</span><input pInputText formControlName="bban" /></label>
+        </form>
+        <div class="actions">
+          <p-button label="Back" [text]="true" (onClick)="back()" />
+          <p-button label="Create escrow" [loading]="busy()" (onClick)="createEscrow()" />
+        </div>
+      }
+      @case (2) {
+        <h2>3) Contract + 100% schedule</h2>
+        <form class="form-grid" [formGroup]="contractForm">
+          <label><span>Contract number</span><input pInputText formControlName="contractNumber" /></label>
           <label>
-            <span>Amount (SAR)</span>
+            <span>Total amount</span>
+            <p-inputNumber formControlName="totalAmount" mode="decimal" [minFractionDigits]="2" />
+          </label>
+          <label><span>Penalty %</span><p-inputNumber formControlName="penaltyPercentage" /></label>
+          <label><span>SCE %</span><p-inputNumber formControlName="sceFeePercentage" /></label>
+          <label><span>Moatamed %</span><p-inputNumber formControlName="moatamedFeePercentage" /></label>
+          <label><span>VAT %</span><p-inputNumber formControlName="vatPercentage" /></label>
+        </form>
+        <div class="actions">
+          <p-button label="Back" [text]="true" (onClick)="back()" />
+          <p-button label="Create contract & schedule" [loading]="busy()" (onClick)="createContractAndSchedule()" />
+        </div>
+      }
+      @case (3) {
+        <h2>4) Collect (payment link → status → capture)</h2>
+        <form class="form-grid" [formGroup]="collectForm">
+          <label><span>Reference</span><input pInputText formControlName="paymentReferenceId" /></label>
+          <label>
+            <span>Amount</span>
+            <p-inputNumber formControlName="amount" mode="decimal" [minFractionDigits]="2" />
+          </label>
+        </form>
+        <div class="actions">
+          <p-button label="Back" [text]="true" (onClick)="back()" />
+          <p-button label="Collect funds" [loading]="busy()" (onClick)="collectFunds()" />
+        </div>
+      }
+      @case (4) {
+        <h2>5) Approve release request</h2>
+        <p class="hint">Creates an Approved release against the schedule line (demo context links it to the collection).</p>
+        <div class="actions">
+          <p-button label="Back" [text]="true" (onClick)="back()" />
+          <p-button label="Create & approve release" [loading]="busy()" (onClick)="createRelease()" />
+        </div>
+      }
+      @case (5) {
+        <h2>6) Supplier payout</h2>
+        <form class="form-grid" [formGroup]="payoutForm">
+          <label><span>Payout reference</span><input pInputText formControlName="paymentReferenceId" /></label>
+          <label>
+            <span>Amount</span>
             <p-inputNumber formControlName="amount" mode="decimal" [minFractionDigits]="2" />
           </label>
         </form>
         @if (customerBalance() !== null) {
-          <p class="hint">Current balance: {{ customerBalance() | sar }}</p>
+          <p class="hint">Customer balance: {{ customerBalance() | sar }}</p>
+        }
+        @if (supplierBalance() !== null) {
+          <p class="hint">Supplier balance: {{ supplierBalance() | sar }}</p>
         }
         <div class="actions">
           <p-button label="Back" [text]="true" (onClick)="back()" />
-          <p-button label="Deposit and continue" [loading]="busy()" (onClick)="depositStep()" />
+          <p-button label="Pay supplier" [loading]="busy()" (onClick)="createPayout()" />
+          @if (paymentReferenceId()) {
+            <p-button label="Open payment" [outlined]="true" (onClick)="goToPayments()" />
+            <a routerLink="/release-requests"><p-button label="Release requests" [text]="true" /></a>
+          }
         </div>
       }
-      @case (2) {
-        <h2>3) Create supplier</h2>
-        <form class="form-grid" [formGroup]="supplierForm">
-          <label><span>Name</span><input pInputText formControlName="name" /></label>
-          <label><span>Identity number</span><input pInputText formControlName="identityNumber" /></label>
-          <label><span>IBAN</span><input pInputText formControlName="iban" /></label>
-          <label><span>Email</span><input pInputText formControlName="email" /></label>
-          <label><span>Mobile</span><input pInputText formControlName="mobile" /></label>
-          <label>
-            <span>Payout threshold</span>
-            <p-inputNumber formControlName="payoutThresholdAmount" mode="decimal" [minFractionDigits]="2" />
-          </label>
-        </form>
-        <div class="actions">
-          <p-button label="Back" [text]="true" (onClick)="back()" />
-          <p-button label="Create and continue" [loading]="busy()" (onClick)="createSupplierStep()" />
-        </div>
-      }
-      @case (3) {
-        <h2>4) Create supplier payment</h2>
-        <form class="form-grid" [formGroup]="paymentForm">
-          <label><span>Payment reference</span><input pInputText formControlName="paymentReferenceId" /></label>
-          <label>
-            <span>Customer</span>
-            <p-select
-              formControlName="customerId"
-              [options]="customers()"
-              optionLabel="name"
-              optionValue="id"
-              styleClass="w-100"
-            />
-          </label>
-          <label>
-            <span>Supplier</span>
-            <p-select
-              formControlName="supplierId"
-              [options]="suppliers()"
-              optionLabel="name"
-              optionValue="id"
-              styleClass="w-100"
-            />
-          </label>
-          <label>
-            <span>Amount (SAR)</span>
-            <p-inputNumber formControlName="amount" mode="decimal" [minFractionDigits]="2" />
-          </label>
-        </form>
-        <div class="actions">
-          <p-button label="Back" [text]="true" (onClick)="back()" />
-          <p-button label="Create payment" [loading]="busy()" (onClick)="paymentStep()" />
-        </div>
-      }
-      @default {
-        <h2>5) Track status and balances</h2>
-        <div class="summary">
-          <p>Payment reference: <strong>{{ paymentReferenceId() }}</strong></p>
-          <p>Customer balance: <strong>{{ customerBalance() | sar }}</strong></p>
-          <p>Supplier balance: <strong>{{ supplierBalance() | sar }}</strong></p>
-          <p class="hint">Refresh the status more than once to simulate Pending → Processing → Completed.</p>
-        </div>
-        <div class="actions">
-          <p-button label="Back" [text]="true" (onClick)="back()" />
-          <p-button label="Refresh status" icon="pi pi-sync" [loading]="busy()" (onClick)="refreshStatuses()" />
-          <p-button label="Open payment details" icon="pi pi-external-link" (onClick)="goToPaymentDetails()" />
-        </div>
-      }
+    }
+
+    @if (contextNotes().length) {
+      <div class="context">
+        <h3>Demo context</h3>
+        <ul>
+          @for (note of contextNotes(); track note) {
+            <li>{{ note }}</li>
+          }
+        </ul>
+      </div>
     }
   </div>
 </div>

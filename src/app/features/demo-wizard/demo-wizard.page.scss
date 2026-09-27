@@ -48,3 +48,39 @@
   color: var(--dh-muted);
   font-size: 0.9rem;
 }
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.two-col h3 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.context {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--dh-border);
+}
+
+.context h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+}
+
+.context ul {
+  margin: 0;
+  padding-inline-start: 1.1rem;
+  color: var(--dh-muted);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 800px) {
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+}

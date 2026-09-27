@@ -1,21 +1,49 @@
-import { Customer, PaymentRecord, PaymentStatus, Supplier } from '../models/dhamen.models';
+import {
+  Contract,
+  Customer,
+  DemoActivityEntry,
+  EscrowAccount,
+  PaymentLink,
+  PaymentRecord,
+  PaymentScheduleLine,
+  PaymentStatus,
+  ReleaseRequest,
+  ReleaseRequestPenalty,
+  Supplier,
+} from '../models/dhamen.models';
 import { createUuid } from '../utils/id.utils';
 
-const STORAGE_KEY = 'dhamen-demo-store-v1';
+const STORAGE_KEY = 'dhamen-demo-store-v2';
 
 export interface DemoStoreState {
   customers: Customer[];
   suppliers: Supplier[];
   payments: PaymentRecord[];
+  escrowAccounts: EscrowAccount[];
+  contracts: Contract[];
+  scheduleLines: PaymentScheduleLine[];
+  releaseRequests: ReleaseRequest[];
+  penalties: ReleaseRequestPenalty[];
+  paymentLinks: PaymentLink[];
+  activity: DemoActivityEntry[];
+  paymentStatuses: Record<string, PaymentStatus | string>;
 }
 
 function nowIso(): string {
   return new Date().toISOString();
 }
 
+function today(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
 export function createSeedState(): DemoStoreState {
   const customerId = '11111111-1111-1111-1111-111111111111';
   const supplierId = '22222222-2222-2222-2222-222222222222';
+  const escrowId = '33333333-3333-3333-3333-333333333333';
+  const contractId = '44444444-4444-4444-4444-444444444444';
+  const line1 = '55555555-5555-5555-5555-555555555551';
+  const line2 = '55555555-5555-5555-5555-555555555552';
   const stamp = nowIso();
 
   return {
@@ -70,6 +98,91 @@ export function createSeedState(): DemoStoreState {
       },
     ],
     payments: [],
+    escrowAccounts: [
+      {
+        id: escrowId,
+        holderType: 'Authority',
+        name: 'Authority Escrow VA',
+        viban: 'SA0000000000000000000001',
+        bban: '00000000000000000001',
+        createdAt: stamp,
+        updatedAt: stamp,
+      },
+    ],
+    contracts: [
+      {
+        id: contractId,
+        contractNumber: 'CNT-DEMO-001',
+        totalAmount: 10000,
+        penaltyPercentage: 2,
+        sceFeePercentage: 1,
+        moatamedFeePercentage: 0.5,
+        vatPercentage: 15,
+        escrowAccountId: escrowId,
+        createdAt: stamp,
+        updatedAt: stamp,
+      },
+    ],
+    scheduleLines: [
+      {
+        id: line1,
+        contractId,
+        sequenceNo: 1,
+        title: 'Advance 40%',
+        percentage: 40,
+        amount: 4000,
+        dueDate: today(),
+        escrowAccountId: escrowId,
+        createdAt: stamp,
+        updatedAt: stamp,
+      },
+      {
+        id: line2,
+        contractId,
+        sequenceNo: 2,
+        title: 'Completion 60%',
+        percentage: 60,
+        amount: 6000,
+        dueDate: today(),
+        escrowAccountId: escrowId,
+        createdAt: stamp,
+        updatedAt: stamp,
+      },
+    ],
+    releaseRequests: [],
+    penalties: [],
+    paymentLinks: [],
+    activity: [
+      {
+        id: createUuid(),
+        at: stamp,
+        kind: 'seed',
+        reference: 'CNT-DEMO-001',
+        summary: 'Demo sandbox seeded with sample contract and escrow account',
+      },
+    ],
+    paymentStatuses: {},
+  };
+}
+
+function migrate(raw: unknown): DemoStoreState {
+  const seed = createSeedState();
+  if (!raw || typeof raw !== 'object') {
+    return seed;
+  }
+  const state = raw as Partial<DemoStoreState>;
+  return {
+    customers: state.customers ?? seed.customers,
+    suppliers: state.suppliers ?? seed.suppliers,
+    payments: state.payments ?? [],
+    escrowAccounts: state.escrowAccounts ?? seed.escrowAccounts,
+    contracts: state.contracts ?? seed.contracts,
+    scheduleLines: state.scheduleLines ?? seed.scheduleLines,
+    releaseRequests: state.releaseRequests ?? [],
+    penalties: state.penalties ?? [],
+    paymentLinks: state.paymentLinks ?? [],
+    activity: state.activity ?? seed.activity,
+    paymentStatuses: state.paymentStatuses ?? {},
   };
 }
 
@@ -77,11 +190,18 @@ export function loadStoreState(): DemoStoreState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
+      // Migrate from v1 if present
+      const legacy = localStorage.getItem('dhamen-demo-store-v1');
+      if (legacy) {
+        const migrated = migrate(JSON.parse(legacy));
+        saveStoreState(migrated);
+        return migrated;
+      }
       const seed = createSeedState();
       saveStoreState(seed);
       return seed;
     }
-    return JSON.parse(raw) as DemoStoreState;
+    return migrate(JSON.parse(raw));
   } catch {
     const seed = createSeedState();
     saveStoreState(seed);
@@ -99,13 +219,36 @@ export function resetStoreState(): DemoStoreState {
   return seed;
 }
 
-export function advancePaymentStatus(status: PaymentStatus): PaymentStatus {
+export function advancePaymentStatus(status: PaymentStatus | string): PaymentStatus {
   switch (status) {
     case 'Pending':
       return 'Processing';
     case 'Processing':
       return 'Completed';
+    case 'Completed':
+    case 'Failed':
+      return status as PaymentStatus;
     default:
-      return status;
+      return 'Processing';
   }
+}
+
+export function pushActivity(
+  state: DemoStoreState,
+  kind: string,
+  reference: string,
+  summary: string,
+  entityIds?: Record<string, string>
+): void {
+  state.activity = [
+    {
+      id: createUuid(),
+      at: nowIso(),
+      kind,
+      reference,
+      summary,
+      entityIds,
+    },
+    ...state.activity,
+  ].slice(0, 200);
 }

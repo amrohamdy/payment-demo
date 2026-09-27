@@ -109,6 +109,7 @@
             optionValue="id"
             placeholder="Select supplier"
             [filter]="suppliers().length > 6"
+            appendTo="body"
             styleClass="w-100"
           />
           <p-inputNumber
@@ -125,6 +126,7 @@
             optionLabel="label"
             optionValue="id"
             [filter]="customerOptions().length > 7"
+            appendTo="body"
             styleClass="w-100"
           >
             <ng-template #item let-item>
