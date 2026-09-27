@@ -1,4 +1,6 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
@@ -6,6 +8,7 @@ import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { MessageService } from 'primeng/api';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { Select } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { DHAMEN_API } from '../../core/api/dhamen-api';
 import { Customer } from '../../core/models/dhamen.models';
@@ -32,6 +35,8 @@ import { SarPipe } from '../../shared/pipes/sar.pipe';
     ProgressSpinner,
     EmptyState,
     SarPipe,
+    Select,
+    DecimalPipe,
   ],
   templateUrl: './customers.page.html',
   styleUrl: './customers.page.scss',
@@ -58,11 +63,23 @@ export class CustomersPage implements OnInit {
   });
 
   readonly depositForm = this.fb.nonNullable.group({
+    customerId: this.fb.control<string | null>(null, Validators.required),
     amount: this.fb.nonNullable.control<number | null>(null, [
       Validators.required,
       positiveAmountValidator(),
     ]),
+    paymentIWalletNumber: [''],
   });
+
+  readonly quickAmounts = [500, 1000, 5000, 10000];
+
+  private readonly depositCustomerId = toSignal(this.depositForm.controls.customerId.valueChanges, {
+    initialValue: null,
+  });
+
+  readonly depositCustomer = computed(
+    () => this.customers().find((c) => c.id === this.depositCustomerId()) ?? null
+  );
 
   ngOnInit(): void {
     this.reload();
@@ -111,7 +128,7 @@ export class CustomersPage implements OnInit {
 
   openDeposit(customer: Customer): void {
     this.selectedCustomer.set(customer);
-    this.depositForm.reset({ amount: null });
+    this.depositForm.reset({ customerId: customer.id, amount: null, paymentIWalletNumber: '' });
     this.depositVisible.set(true);
   }
 
@@ -144,19 +161,24 @@ export class CustomersPage implements OnInit {
     });
   }
 
+  setDepositAmount(amount: number): void {
+    this.depositForm.controls.amount.setValue(amount);
+  }
+
   submitDeposit(): void {
-    const customer = this.selectedCustomer();
+    const customer = this.depositCustomer();
     if (!customer || this.depositForm.invalid) {
       this.depositForm.markAllAsTouched();
       return;
     }
     const amount = Number(this.depositForm.controls.amount.value);
+    const walletNumber = this.depositForm.controls.paymentIWalletNumber.value.trim();
     this.saving.set(true);
     this.api
       .depositMoney({
         customerId: customer.id,
         amount,
-        paymentIWalletNumber: null,
+        paymentIWalletNumber: walletNumber || null,
       })
       .subscribe({
         next: (res) => {

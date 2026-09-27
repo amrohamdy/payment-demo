@@ -1,0 +1,182 @@
+<app-page-header
+  eyebrow="Escrow & Pay-out"
+  title="Payouts & Splits"
+  subtitle="Release escrow funds to suppliers and split one collection across many suppliers."
+>
+  <p-button label="Refresh" icon="pi pi-refresh" [outlined]="true" (onClick)="reload()" />
+  <p-button label="New split payout" icon="pi pi-share-alt" (onClick)="openCreate()" />
+</app-page-header>
+
+@if (loading()) {
+  <div class="loading-wrap"><p-progressSpinner strokeWidth="4" /></div>
+} @else if (payments().length === 0) {
+  <app-empty-state
+    icon="💸"
+    title="No payouts yet"
+    message="Release escrow funds to one or more suppliers to create the first split."
+  >
+    <p-button label="New split payout" icon="pi pi-share-alt" (onClick)="openCreate()" />
+  </app-empty-state>
+} @else {
+  <div class="table-card">
+    <p-table [value]="payments()" [paginator]="true" [rows]="8">
+      <ng-template #header>
+        <tr>
+          <th>Reference</th>
+          <th>Suppliers</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th class="text-end">Total</th>
+          <th></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-payment>
+        <tr>
+          <td class="mono">{{ payment.paymentReferenceId }}</td>
+          <td>
+            <div class="split-chips">
+              @for (line of payment.lines; track line.supplierId) {
+                <span class="split-chip">
+                  {{ line.supplierName }} · {{ line.amount | sar }}
+                  <app-status-badge [status]="line.status" />
+                </span>
+              }
+            </div>
+          </td>
+          <td><app-status-badge [status]="payment.overallStatus" /></td>
+          <td>{{ payment.createdAt | date: 'medium' }}</td>
+          <td class="text-end">{{ paymentTotal(payment) | sar }}</td>
+          <td>
+            <p-button
+              label="Check status"
+              icon="pi pi-sync"
+              size="small"
+              [text]="true"
+              [loading]="checkingRef() === payment.paymentReferenceId"
+              (onClick)="checkStatus(payment)"
+            />
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+}
+
+<p-dialog
+  [visible]="formVisible()"
+  (visibleChange)="formVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: 'min(660px, 96vw)' }"
+  [draggable]="false"
+  styleClass="umran-dialog"
+>
+  <ng-template #header>
+    <span class="p-dialog-title split-title">
+      <i class="pi pi-share-alt" aria-hidden="true"></i>
+      Supplier payment (split)
+    </span>
+  </ng-template>
+
+  <form class="split-form" [formGroup]="form">
+    <label class="field-label">
+      <span>paymentReferenceId <span class="req">*</span></span>
+      <div class="ref-row">
+        <input pInputText class="mono" formControlName="paymentReferenceId" />
+        <p-button
+          icon="pi pi-sync"
+          [outlined]="true"
+          severity="secondary"
+          ariaLabel="Generate new reference"
+          (onClick)="regenerateReference()"
+        />
+      </div>
+    </label>
+
+    <div class="split-lines" formArrayName="supplierPayments">
+      <div class="split-line split-line--head">
+        <span>supplierId <span class="req">*</span></span>
+        <span>amount (SAR) <span class="req">*</span></span>
+        <span>customerId</span>
+        <span></span>
+      </div>
+
+      @for (line of supplierPayments.controls; track $index; let i = $index) {
+        <div class="split-line" [formGroupName]="i">
+          <p-select
+            formControlName="supplierId"
+            [options]="suppliers()"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Select supplier"
+            [filter]="suppliers().length > 6"
+            styleClass="w-100"
+          />
+          <p-inputNumber
+            formControlName="amount"
+            mode="decimal"
+            [minFractionDigits]="2"
+            [min]="0"
+            placeholder="0.00"
+            styleClass="w-100"
+          />
+          <p-select
+            formControlName="customerId"
+            [options]="customerOptions()"
+            optionLabel="label"
+            optionValue="id"
+            [filter]="customerOptions().length > 7"
+            styleClass="w-100"
+          >
+            <ng-template #item let-item>
+              <div class="customer-option">
+                <span>{{ item.label }}</span>
+                <small>{{ item.hint }}</small>
+              </div>
+            </ng-template>
+          </p-select>
+          <p-button
+            icon="pi pi-trash"
+            [text]="true"
+            severity="secondary"
+            ariaLabel="Remove supplier"
+            [disabled]="supplierPayments.length === 1"
+            (onClick)="removeLine(i)"
+          />
+        </div>
+      }
+    </div>
+
+    @if (duplicateSupplier()) {
+      <div class="form-error">A supplier can only appear once per payment.</div>
+    }
+
+    <div class="split-footer">
+      <p-button
+        label="Add supplier"
+        icon="pi pi-plus"
+        [outlined]="true"
+        severity="secondary"
+        size="small"
+        (onClick)="addLine()"
+      />
+      <span class="split-total"
+        >Total <strong>{{ total() | sar }}</strong></span
+      >
+    </div>
+  </form>
+
+  <ng-template #footer>
+    <p-button
+      label="Cancel"
+      [outlined]="true"
+      severity="secondary"
+      (onClick)="formVisible.set(false)"
+    />
+    <p-button
+      label="Create payment"
+      [disabled]="!canSubmit()"
+      [loading]="saving()"
+      (onClick)="submit()"
+    />
+  </ng-template>
+</p-dialog>

@@ -34,7 +34,11 @@
           <td>{{ supplier.payoutThresholdAmount | sar }}</td>
           <td>
             <div class="threshold">
-              <p-progressBar [value]="progress(supplier)" [showValue]="false" styleClass="threshold__bar" />
+              <p-progressBar
+                [value]="progress(supplier)"
+                [showValue]="false"
+                styleClass="threshold__bar"
+              />
               <div class="threshold__meta">
                 <span>{{ progress(supplier) }}%</span>
                 @if (thresholdReached(supplier)) {
@@ -47,13 +51,25 @@
           </td>
           <td>
             <div class="actions">
-              <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" (onClick)="openEdit(supplier)" />
+              <p-button
+                icon="pi pi-pencil"
+                [rounded]="true"
+                [text]="true"
+                (onClick)="openEdit(supplier)"
+              />
               <p-button
                 icon="pi pi-wallet"
                 [rounded]="true"
                 [text]="true"
                 severity="info"
                 (onClick)="refreshBalance(supplier)"
+              />
+              <p-button
+                label="Pay supplier"
+                icon="pi pi-send"
+                size="small"
+                [outlined]="true"
+                (onClick)="paySupplier(supplier)"
               />
             </div>
           </td>
@@ -73,7 +89,11 @@
   styleClass="umran-dialog"
 >
   <p class="dialog-hint">
-    {{ editMode() ? 'Update supplier payout details and threshold.' : 'Add a beneficiary who can receive released escrow funds.' }}
+    {{
+      editMode()
+        ? 'Update supplier payout details and threshold.'
+        : 'Add a beneficiary who can receive released escrow funds.'
+    }}
   </p>
   <form class="form-grid" [formGroup]="form">
     <label class="field-label">
@@ -81,7 +101,7 @@
       <input pInputText formControlName="name" />
     </label>
     <label class="field-label">
-      Identity / CR number
+      Identity Number
       <input pInputText formControlName="identityNumber" />
     </label>
     <label class="field-label">

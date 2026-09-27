@@ -13,7 +13,9 @@
 
 .actions {
   display: flex;
-  gap: 0.15rem;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
 }
 
 .mono {
@@ -39,4 +41,63 @@
 .form-grid input,
 .form-grid :host ::ng-deep .p-inputnumber {
   width: 100%;
+}
+
+.req {
+  color: var(--dh-danger);
+}
+
+.customer-option {
+  display: grid;
+  line-height: 1.25;
+
+  small {
+    color: var(--dh-muted);
+    font-size: 0.72rem;
+  }
+}
+
+.viban-card {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--dh-border);
+  border-radius: 10px;
+  background: #faf9fb;
+}
+
+.viban-card__label {
+  color: var(--dh-muted);
+  font-size: 0.78rem;
+
+  strong {
+    color: var(--dh-text);
+  }
+}
+
+.viban-card__iban {
+  font-size: 0.95rem;
+  color: var(--dh-text);
+}
+
+.quick-amounts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.quick-amount {
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--dh-border);
+  border-radius: 6px;
+  background: #f6f5f8;
+  color: var(--dh-text);
+  font-size: 0.8rem;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--dh-primary);
+    color: var(--dh-primary);
+  }
 }

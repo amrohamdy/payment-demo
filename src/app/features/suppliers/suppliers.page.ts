@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputNumber } from 'primeng/inputnumber';
@@ -45,6 +46,7 @@ export class SuppliersPage implements OnInit {
   private readonly api = inject(DHAMEN_API);
   private readonly fb = inject(FormBuilder);
   private readonly messages = inject(MessageService);
+  private readonly router = inject(Router);
 
   readonly loading = signal(false);
   readonly saving = signal(false);
@@ -176,5 +178,10 @@ export class SuppliersPage implements OnInit {
         this.messages.add({ severity: 'error', summary: 'Error', detail: err.message });
       },
     });
+  }
+
+  /** Opens the split payout dialog on Payouts & Splits with this supplier preselected. */
+  paySupplier(supplier: Supplier): void {
+    this.router.navigate(['/payouts-splits'], { queryParams: { supplierId: supplier.id } });
   }
 }
