@@ -14,3 +14,11 @@ export function createPaymentReferenceId(): string {
   const suffix = Math.floor(Math.random() * 9000 + 1000);
   return `REF-${year}-${suffix}`;
 }
+
+/** e.g. SP-20260927-ZVHE1 */
+export function createSplitReferenceId(): string {
+  const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
+  const suffix = Array.from({ length: 5 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('');
+  return `SP-${date}-${suffix}`;
+}

@@ -74,7 +74,11 @@
   styleClass="umran-dialog"
 >
   <p class="dialog-hint">
-    {{ editMode() ? 'Update customer bank details used for funding.' : 'Register a customer who can fund supplier payments.' }}
+    {{
+      editMode()
+        ? 'Update customer bank details used for funding.'
+        : 'Register a customer who can fund supplier payments.'
+    }}
   </p>
   <form class="form-grid" [formGroup]="form" (ngSubmit)="saveCustomer()">
     <label class="field-label">
@@ -115,23 +119,84 @@
   [visible]="depositVisible()"
   (visibleChange)="depositVisible.set($event)"
   [modal]="true"
-  [style]="{ width: 'min(400px, 95vw)' }"
+  [style]="{ width: 'min(440px, 95vw)' }"
   [draggable]="false"
   styleClass="umran-dialog"
 >
-  @if (selectedCustomer(); as customer) {
-    <p class="dialog-hint">
-      Deposit into <strong>{{ customer.name }}</strong> · Current balance {{ customer.balance | sar }}
-    </p>
-  }
+  <p class="dialog-hint">
+    POST /api/dhamen/customers/deposit · simulates a bank transfer into the customer's virtual IBAN
+    (test environment only).
+  </p>
   <form [formGroup]="depositForm" class="form-grid">
     <label class="field-label">
-      Amount (SAR)
-      <p-inputNumber formControlName="amount" mode="decimal" [minFractionDigits]="2" [min]="0.01" styleClass="w-100" />
+      <span>Customer <span class="req">*</span></span>
+      <p-select
+        formControlName="customerId"
+        [options]="customers()"
+        optionLabel="name"
+        optionValue="id"
+        [filter]="customers().length > 6"
+        filterBy="name,identityNumber,iban"
+        placeholder="Select customer"
+        styleClass="w-100"
+      >
+        <ng-template #selectedItem let-item>
+          <div class="customer-option">
+            <span>{{ item.name }}</span>
+            <small>{{ item.identityNumber }} · {{ item.iban }}</small>
+          </div>
+        </ng-template>
+        <ng-template #item let-item>
+          <div class="customer-option">
+            <span>{{ item.name }}</span>
+            <small>{{ item.identityNumber }} · {{ item.iban }}</small>
+          </div>
+        </ng-template>
+      </p-select>
     </label>
+
+    @if (depositCustomer(); as customer) {
+      <div class="viban-card">
+        <span class="viban-card__label">Destination VIBAN</span>
+        <span class="viban-card__iban mono">{{ customer.iban }}</span>
+        <span class="viban-card__label">
+          Current balance <strong>{{ customer.balance | sar }}</strong>
+        </span>
+      </div>
+    }
+
+    <div class="form-grid form-grid--2">
+      <label class="field-label">
+        <span>Amount (SAR) <span class="req">*</span></span>
+        <p-inputNumber
+          formControlName="amount"
+          mode="decimal"
+          [maxFractionDigits]="2"
+          [min]="0.01"
+          styleClass="w-100"
+        />
+      </label>
+      <label class="field-label">
+        <span>Source wallet <span class="field-help">(optional)</span></span>
+        <input pInputText class="mono" formControlName="paymentIWalletNumber" />
+      </label>
+    </div>
+
+    <div class="quick-amounts">
+      @for (preset of quickAmounts; track preset) {
+        <button type="button" class="quick-amount" (click)="setDepositAmount(preset)">
+          {{ preset | number }}
+        </button>
+      }
+    </div>
   </form>
   <ng-template #footer>
-    <p-button label="Cancel" [text]="true" (onClick)="depositVisible.set(false)" />
+    <p-button
+      label="Cancel"
+      [outlined]="true"
+      severity="secondary"
+      (onClick)="depositVisible.set(false)"
+    />
     <p-button label="Deposit" [loading]="saving()" (onClick)="submitDeposit()" />
   </ng-template>
 </p-dialog>

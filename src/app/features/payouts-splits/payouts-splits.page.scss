@@ -1,0 +1,158 @@
+.loading-wrap {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+}
+
+.table-card {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid var(--dh-border);
+  overflow: hidden;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85rem;
+}
+
+.muted {
+  color: var(--dh-muted);
+}
+
+.text-danger {
+  color: var(--dh-danger);
+}
+
+.split-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.split-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.3rem 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--dh-primary-soft);
+  color: var(--dh-primary-dark);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.split-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.split-form {
+  display: grid;
+  gap: 1rem;
+  padding-bottom: 0.85rem;
+}
+
+.req {
+  color: var(--dh-danger);
+}
+
+.ref-row {
+  display: flex;
+  gap: 0.5rem;
+
+  input {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.split-lines {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.75rem;
+  border: 1px solid #ebe7f0;
+  border-radius: 10px;
+  background: #fcfbfd;
+}
+
+.split-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1.2fr) auto;
+  gap: 0.6rem;
+  align-items: center;
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.split-line--head {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  color: var(--dh-muted);
+
+  @media (max-width: 560px) {
+    display: none;
+  }
+}
+
+.customer-option {
+  display: grid;
+  line-height: 1.25;
+
+  small {
+    color: var(--dh-muted);
+    font-size: 0.72rem;
+  }
+}
+
+:host ::ng-deep .split-form .p-inputnumber,
+:host ::ng-deep .split-form .p-inputnumber-input {
+  width: 100%;
+}
+
+.form-error {
+  color: var(--dh-danger);
+  font-size: 0.78rem;
+}
+
+.split-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.split-total {
+  color: var(--dh-muted);
+  font-size: 0.875rem;
+
+  strong {
+    margin-inline-start: 0.35rem;
+    color: var(--dh-text);
+  }
+}
+
+.request-preview {
+  border: 1px solid var(--dh-border);
+  border-radius: 10px;
+  font-size: 0.78rem;
+
+  summary {
+    padding: 0.6rem 0.9rem;
+    color: var(--dh-muted);
+    cursor: pointer;
+  }
+
+  pre {
+    margin: 0;
+    padding: 0.75rem 0.9rem;
+    border-top: 1px solid var(--dh-border);
+    background: #faf9fb;
+    font-size: 0.75rem;
+    max-height: 220px;
+    overflow: auto;
+  }
+}

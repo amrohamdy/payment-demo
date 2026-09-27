@@ -13,7 +13,9 @@
 
 .actions {
   display: flex;
-  gap: 0.15rem;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
 }
 
 .threshold {

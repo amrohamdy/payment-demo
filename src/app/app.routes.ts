@@ -28,6 +28,13 @@ export const routes: Routes = [
           import('./features/payments/payments.page').then((m) => m.PaymentsPage),
       },
       {
+        path: 'payouts-splits',
+        loadComponent: () =>
+          import('./features/payouts-splits/payouts-splits.page').then(
+            (m) => m.PayoutsSplitsPage
+          ),
+      },
+      {
         path: 'demo-wizard',
         loadComponent: () =>
           import('./features/demo-wizard/demo-wizard.page').then((m) => m.DemoWizardPage),
