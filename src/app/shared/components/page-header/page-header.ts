@@ -25,26 +25,28 @@ import { Component, input } from '@angular/core';
       align-items: flex-start;
       justify-content: space-between;
       gap: 1rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
       flex-wrap: wrap;
       text-align: start;
-      direction: rtl;
     }
     .page-header__eyebrow {
       margin: 0 0 0.25rem;
       color: var(--dh-muted);
-      font-size: 0.875rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
     .page-header__title {
       margin: 0;
-      font-size: 1.75rem;
+      font-size: 1.55rem;
       font-weight: 700;
       color: var(--dh-text);
     }
     .page-header__subtitle {
       margin: 0.35rem 0 0;
       color: var(--dh-muted);
-      font-size: 0.95rem;
+      font-size: 0.82rem;
     }
     .page-header__actions {
       display: flex;

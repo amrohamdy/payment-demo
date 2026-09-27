@@ -87,7 +87,7 @@ export class SuppliersPage implements OnInit {
       },
       error: (err: Error) => {
         this.loading.set(false);
-        this.messages.add({ severity: 'error', summary: 'خطأ', detail: err.message });
+        this.messages.add({ severity: 'error', summary: 'Error', detail: err.message });
       },
     });
   }
@@ -152,12 +152,12 @@ export class SuppliersPage implements OnInit {
       next: (res) => {
         this.saving.set(false);
         this.formVisible.set(false);
-        this.messages.add({ severity: 'success', summary: 'تم', detail: res.message });
+        this.messages.add({ severity: 'success', summary: 'Supplier saved', detail: res.message });
         this.reload();
       },
       error: (err: Error) => {
         this.saving.set(false);
-        this.messages.add({ severity: 'error', summary: 'فشل الحفظ', detail: err.message });
+        this.messages.add({ severity: 'error', summary: 'Save failed', detail: err.message });
       },
     });
   }
@@ -167,13 +167,13 @@ export class SuppliersPage implements OnInit {
       next: (res) => {
         this.messages.add({
           severity: 'info',
-          summary: 'رصيد المورد',
+          summary: 'Supplier balance',
           detail: `${supplier.name}: ${res.balance} ${res.currency}`,
         });
         this.reload();
       },
       error: (err: Error) => {
-        this.messages.add({ severity: 'error', summary: 'خطأ', detail: err.message });
+        this.messages.add({ severity: 'error', summary: 'Error', detail: err.message });
       },
     });
   }

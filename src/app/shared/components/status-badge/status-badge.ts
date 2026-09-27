@@ -20,17 +20,17 @@ export class StatusBadge {
   label(): string {
     switch (this.status()) {
       case 'Pending':
-        return 'قيد الانتظار';
+        return 'Pending';
       case 'Processing':
-        return 'قيد المعالجة';
+        return 'Processing';
       case 'Completed':
-        return 'مكتمل';
+        return 'Completed';
       case 'Failed':
-        return 'فشل';
+        return 'Failed';
       case 'Active':
-        return 'مفعل';
+        return 'Active';
       case 'Inactive':
-        return 'غير مفعل';
+        return 'Inactive';
     }
   }
 

@@ -3,7 +3,7 @@ export function roundMoney(value: number): number {
 }
 
 export function formatMoney(value: number, currency = 'SAR'): string {
-  return new Intl.NumberFormat('ar-SA', {
+  return new Intl.NumberFormat('en-SA', {
     style: 'currency',
     currency,
     minimumFractionDigits: 2,

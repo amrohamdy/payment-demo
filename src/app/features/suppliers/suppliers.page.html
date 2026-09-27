@@ -1,29 +1,29 @@
 <app-page-header
-  eyebrow="إدارة الأطراف"
-  title="الموردون"
-  subtitle="إنشاء وتحديث الموردين ومتابعة الرصيد مقابل حد الصرف"
+  eyebrow="Parties"
+  title="Suppliers"
+  subtitle="Beneficiaries who receive released escrow funds. Track balances and payout thresholds."
 >
-  <p-button label="تحديث" icon="pi pi-refresh" [outlined]="true" (onClick)="reload()" />
-  <p-button label="مورد جديد" icon="pi pi-plus" (onClick)="openCreate()" />
+  <p-button label="Refresh" icon="pi pi-refresh" [outlined]="true" (onClick)="reload()" />
+  <p-button label="New supplier" icon="pi pi-plus" (onClick)="openCreate()" />
 </app-page-header>
 
 @if (loading()) {
   <div class="loading-wrap"><p-progressSpinner strokeWidth="4" /></div>
 } @else if (suppliers().length === 0) {
-  <app-empty-state title="لا يوجد موردون" message="أضف موردًا لبدء عمليات الدفع">
-    <p-button label="إنشاء مورد" icon="pi pi-plus" (onClick)="openCreate()" />
+  <app-empty-state title="No suppliers yet" message="Add a supplier to start making payments.">
+    <p-button label="Create supplier" icon="pi pi-plus" (onClick)="openCreate()" />
   </app-empty-state>
 } @else {
   <div class="table-card">
     <p-table [value]="suppliers()" [paginator]="true" [rows]="8" responsiveLayout="scroll">
       <ng-template #header>
         <tr>
-          <th>الاسم</th>
-          <th>رقم الهوية</th>
-          <th>الرصيد</th>
-          <th>حد الصرف</th>
-          <th>التقدم نحو الحد</th>
-          <th>إجراءات</th>
+          <th>Supplier</th>
+          <th>Identity no.</th>
+          <th>Balance</th>
+          <th>Payout threshold</th>
+          <th>Threshold progress</th>
+          <th>Actions</th>
         </tr>
       </ng-template>
       <ng-template #body let-supplier>
@@ -38,9 +38,9 @@
               <div class="threshold__meta">
                 <span>{{ progress(supplier) }}%</span>
                 @if (thresholdReached(supplier)) {
-                  <p-tag severity="success" value="بلغ حد الصرف" />
+                  <p-tag severity="success" value="Threshold reached" />
                 } @else {
-                  <p-tag severity="secondary" value="لم يبلغ الحد" />
+                  <p-tag severity="secondary" value="Below threshold" />
                 }
               </div>
             </div>
@@ -64,7 +64,7 @@
 }
 
 <p-dialog
-  [header]="editMode() ? 'تعديل مورد' : 'إنشاء مورد'"
+  [header]="editMode() ? 'Edit supplier' : 'New supplier'"
   [visible]="formVisible()"
   (visibleChange)="formVisible.set($event)"
   [modal]="true"
@@ -73,11 +73,11 @@
 >
   <form class="form-grid" [formGroup]="form">
     <label>
-      <span>الاسم</span>
+      <span>Supplier name as per bank account</span>
       <input pInputText formControlName="name" />
     </label>
     <label>
-      <span>رقم الهوية / السجل</span>
+      <span>Identity / CR number</span>
       <input pInputText formControlName="identityNumber" />
     </label>
     <label>
@@ -85,15 +85,15 @@
       <input pInputText formControlName="iban" />
     </label>
     <label>
-      <span>البريد الإلكتروني</span>
+      <span>Email</span>
       <input pInputText formControlName="email" type="email" />
     </label>
     <label>
-      <span>الجوال</span>
+      <span>Mobile</span>
       <input pInputText formControlName="mobile" />
     </label>
     <label>
-      <span>حد الصرف (payoutThresholdAmount)</span>
+      <span>Payout threshold (SAR)</span>
       <p-inputNumber
         formControlName="payoutThresholdAmount"
         mode="decimal"
@@ -103,9 +103,9 @@
     </label>
   </form>
   <ng-template #footer>
-    <p-button label="إلغاء" [text]="true" (onClick)="formVisible.set(false)" />
+    <p-button label="Cancel" [text]="true" (onClick)="formVisible.set(false)" />
     <p-button
-      [label]="editMode() ? 'حفظ التعديل' : 'إنشاء'"
+      [label]="editMode() ? 'Save changes' : 'Create supplier'"
       [loading]="saving()"
       (onClick)="saveSupplier()"
     />

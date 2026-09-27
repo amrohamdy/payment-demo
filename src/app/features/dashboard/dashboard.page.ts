@@ -35,7 +35,7 @@ export class DashboardPage implements OnInit {
       },
       error: (err: Error) => {
         this.loading.set(false);
-        this.messages.add({ severity: 'error', summary: 'خطأ', detail: err.message });
+        this.messages.add({ severity: 'error', summary: 'Error', detail: err.message });
       },
     });
   }

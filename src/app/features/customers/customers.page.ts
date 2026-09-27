@@ -77,7 +77,7 @@ export class CustomersPage implements OnInit {
       },
       error: (err: Error) => {
         this.loading.set(false);
-        this.messages.add({ severity: 'error', summary: 'خطأ', detail: err.message });
+        this.messages.add({ severity: 'error', summary: 'Error', detail: err.message });
       },
     });
   }
@@ -132,14 +132,14 @@ export class CustomersPage implements OnInit {
         this.formVisible.set(false);
         this.messages.add({
           severity: 'success',
-          summary: 'تم',
+          summary: 'Customer saved',
           detail: res.message,
         });
         this.reload();
       },
       error: (err: Error) => {
         this.saving.set(false);
-        this.messages.add({ severity: 'error', summary: 'فشل الحفظ', detail: err.message });
+        this.messages.add({ severity: 'error', summary: 'Save failed', detail: err.message });
       },
     });
   }
@@ -164,14 +164,14 @@ export class CustomersPage implements OnInit {
           this.depositVisible.set(false);
           this.messages.add({
             severity: 'success',
-            summary: 'تم الإيداع',
-            detail: `${res.message} — الرصيد الجديد: ${res.newBalance}`,
+            summary: 'Deposit completed',
+            detail: `${res.message} — New balance: ${res.newBalance}`,
           });
           this.reload();
         },
         error: (err: Error) => {
           this.saving.set(false);
-          this.messages.add({ severity: 'error', summary: 'فشل الإيداع', detail: err.message });
+          this.messages.add({ severity: 'error', summary: 'Deposit failed', detail: err.message });
         },
       });
   }
@@ -181,13 +181,13 @@ export class CustomersPage implements OnInit {
       next: (res) => {
         this.messages.add({
           severity: 'info',
-          summary: 'رصيد العميل',
+          summary: 'Customer balance',
           detail: `${customer.name}: ${res.balance} ${res.currency}`,
         });
         this.reload();
       },
       error: (err: Error) => {
-        this.messages.add({ severity: 'error', summary: 'خطأ', detail: err.message });
+        this.messages.add({ severity: 'error', summary: 'Error', detail: err.message });
       },
     });
   }

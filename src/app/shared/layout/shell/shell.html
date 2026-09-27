@@ -1,9 +1,49 @@
-<div class="shell" dir="rtl">
-  <aside class="shell__sidebar">
-    <app-sidebar />
-  </aside>
-  <main class="shell__main">
-    <router-outlet />
-  </main>
+<div class="app-frame">
+  <div class="brand-strip"></div>
+  <header class="topbar">
+    <div class="topbar__brand">
+      <div class="brand-mark" aria-label="Umran Tech logo placeholder">
+        <strong lang="ar" dir="rtl">عمران تك</strong>
+        <span>Umran Tech</span>
+      </div>
+      <div class="brand-divider"></div>
+      <div>
+        <div class="product-name">Dhamen Escrow Console</div>
+        <div class="product-subtitle">Pay-In / Pay-Out · Authority portal</div>
+      </div>
+      <span class="sandbox-badge">SANDBOX</span>
+    </div>
+
+    <!-- <div class="topbar__tools">
+      <div class="global-search">
+        <i class="pi pi-search"></i>
+        <span>Search customers, payments...</span>
+        <kbd>⌘K</kbd>
+      </div>
+      <div class="balance-chip">
+        <i class="pi pi-wallet"></i>
+        <span>Authority VA</span>
+        <strong>SAR 24,120.00</strong>
+      </div>
+      <button class="icon-button" type="button" aria-label="API status">
+        <i class="pi pi-code"></i>
+        <span>API</span>
+      </button>
+      <button class="icon-button" type="button" aria-label="Notifications">
+        <i class="pi pi-bell"></i>
+        <span class="notification-dot"></span>
+      </button>
+      <div class="avatar">UT</div>
+    </div> -->
+  </header>
+
+  <div class="shell">
+    <aside class="shell__sidebar">
+      <app-sidebar />
+    </aside>
+    <main class="shell__main">
+      <router-outlet />
+    </main>
+  </div>
 </div>
-<p-toast position="top-left" />
+<p-toast position="top-right" />

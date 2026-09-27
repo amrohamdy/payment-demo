@@ -6,17 +6,17 @@
 
 .stat-card {
   background: #fff;
-  border-radius: 14px;
-  padding: 1.15rem 1.25rem;
-  border: 1px solid #e8eef3;
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--dh-border);
   height: 100%;
   box-shadow: 0 1px 2px rgb(16 24 40 / 4%);
   text-align: start;
 }
 
 .stat-card--accent {
-  border-color: #cfe5da;
-  background: linear-gradient(180deg, #f4faf7 0%, #fff 70%);
+  border-color: #d9cbea;
+  background: linear-gradient(180deg, #f8f4fc 0%, #fff 70%);
 }
 
 .stat-card__label {
@@ -26,7 +26,7 @@
 }
 
 .stat-card__value {
-  font-size: 1.85rem;
+  font-size: 1.65rem;
   font-weight: 700;
   color: var(--dh-text);
 }
@@ -44,9 +44,9 @@
 
 .panel {
   background: #fff;
-  border-radius: 14px;
+  border-radius: 10px;
   padding: 1.35rem 1.5rem;
-  border: 1px solid #e8eef3;
+  border: 1px solid var(--dh-border);
   text-align: start;
 }
 

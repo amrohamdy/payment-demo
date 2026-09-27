@@ -54,7 +54,7 @@ describe('MockDhamenApi', () => {
           ],
         })
       )
-    ).rejects.toThrow(/غير كاف/);
+    ).rejects.toThrow(/enough balance/);
   });
 
   it('creates payment, updates balances, and advances status', async () => {

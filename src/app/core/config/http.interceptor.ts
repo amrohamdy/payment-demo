@@ -13,8 +13,8 @@ export const dhamenHttpInterceptor: HttpInterceptorFn = (req, next) => {
       const message =
         error instanceof HttpErrorResponse
           ? extractHttpMessage(error)
-          : 'حدث خطأ غير متوقع أثناء الاتصال بالخادم';
-      messages.add({ severity: 'error', summary: 'خطأ', detail: message, life: 5000 });
+          : 'An unexpected error occurred while contacting the server.';
+      messages.add({ severity: 'error', summary: 'Error', detail: message, life: 5000 });
       return throwError(() => error);
     })
   );
@@ -33,5 +33,5 @@ function extractHttpMessage(error: HttpErrorResponse): string {
       return body['title'];
     }
   }
-  return error.message || 'فشل الطلب';
+  return error.message || 'Request failed.';
 }

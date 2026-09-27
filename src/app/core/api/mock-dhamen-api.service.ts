@@ -54,7 +54,7 @@ export class MockDhamenApi implements DhamenApi {
       };
       this.state.customers = [customer, ...this.state.customers];
       this.persist();
-      return { customerId: customer.id, message: 'تم إنشاء العميل بنجاح' };
+      return { customerId: customer.id, message: 'Customer created successfully.' };
     });
   }
 
@@ -67,14 +67,14 @@ export class MockDhamenApi implements DhamenApi {
       customer.mobile = body.mobile.trim();
       customer.updatedAt = new Date().toISOString();
       this.persist();
-      return { customerId: customer.id, message: 'تم تحديث بيانات العميل' };
+      return { customerId: customer.id, message: 'Customer updated successfully.' };
     });
   }
 
   depositMoney(body: DepositMoneyRequest): Observable<DepositMoneyResponse> {
     return this.run(() => {
       if (!body.amount || body.amount <= 0) {
-        throw this.apiError('المبلغ يجب أن يكون أكبر من صفر');
+        throw this.apiError('The amount must be greater than zero.');
       }
       const customer = this.requireCustomer(body.customerId);
       customer.balance = roundMoney(customer.balance + body.amount);
@@ -84,7 +84,7 @@ export class MockDhamenApi implements DhamenApi {
         customerId: customer.id,
         amount: body.amount,
         newBalance: customer.balance,
-        message: 'تم الإيداع بنجاح',
+        message: 'Deposit completed successfully.',
       };
     });
   }
@@ -118,7 +118,7 @@ export class MockDhamenApi implements DhamenApi {
       };
       this.state.suppliers = [supplier, ...this.state.suppliers];
       this.persist();
-      return { supplierId: supplier.id, message: 'تم إنشاء المورد بنجاح' };
+      return { supplierId: supplier.id, message: 'Supplier created successfully.' };
     });
   }
 
@@ -133,25 +133,25 @@ export class MockDhamenApi implements DhamenApi {
       supplier.mobile = body.mobile.trim();
       supplier.updatedAt = new Date().toISOString();
       this.persist();
-      return { supplierId: supplier.id, message: 'تم تحديث بيانات المورد' };
+      return { supplierId: supplier.id, message: 'Supplier updated successfully.' };
     });
   }
 
   createSupplierPayment(body: SupplierPaymentRequest): Observable<SupplierPaymentResponse> {
     return this.run(() => {
       if (!body.paymentReferenceId?.trim()) {
-        throw this.apiError('مرجع الدفع مطلوب');
+        throw this.apiError('Payment reference is required.');
       }
       if (this.state.payments.some((p) => p.paymentReferenceId === body.paymentReferenceId)) {
-        throw this.apiError('مرجع الدفع مستخدم مسبقًا');
+        throw this.apiError('This payment reference is already in use.');
       }
       if (!body.supplierPayments?.length) {
-        throw this.apiError('يجب إضافة مورد واحد على الأقل');
+        throw this.apiError('Add at least one supplier.');
       }
 
       const supplierIds = body.supplierPayments.map((line) => line.supplierId);
       if (new Set(supplierIds).size !== supplierIds.length) {
-        throw this.apiError('لا يمكن تكرار نفس المورد في دفعة واحدة');
+        throw this.apiError('A supplier cannot be repeated in the same payment.');
       }
 
       const fundedByCustomer = body.supplierPayments.filter((line) => !!line.customerId);
@@ -164,13 +164,13 @@ export class MockDhamenApi implements DhamenApi {
       for (const [customerId, total] of customerGroups.entries()) {
         const customer = this.requireCustomer(customerId);
         if (!hasSufficientBalance(customer.balance, total)) {
-          throw this.apiError(`رصيد العميل ${customer.name} غير كافٍ للدفعة المطلوبة`);
+          throw this.apiError(`${customer.name} does not have enough balance for this payment.`);
         }
       }
 
       for (const line of body.supplierPayments) {
         if (!line.amount || line.amount <= 0) {
-          throw this.apiError('مبلغ الدفع يجب أن يكون أكبر من صفر');
+          throw this.apiError('Payment amount must be greater than zero.');
         }
         this.requireSupplier(line.supplierId);
       }
@@ -209,7 +209,7 @@ export class MockDhamenApi implements DhamenApi {
 
       return {
         paymentReferenceId: record.paymentReferenceId,
-        message: 'تم إنشاء طلب الدفع بنجاح',
+        message: 'Payment request created successfully.',
         lines: record.lines,
       };
     });
@@ -234,7 +234,7 @@ export class MockDhamenApi implements DhamenApi {
       const payment = this.requirePayment(paymentReferenceId);
       const line = payment.lines.find((item) => item.supplierId === supplierId);
       if (!line) {
-        throw this.apiError('لا توجد دفعة لهذا المورد ضمن المرجع المحدد');
+        throw this.apiError('No payment was found for this supplier and reference.');
       }
 
       // Advance mock lifecycle on each status poll until Completed/Failed.
@@ -315,7 +315,7 @@ export class MockDhamenApi implements DhamenApi {
   private requireCustomer(customerId: string): Customer {
     const customer = this.state.customers.find((item) => item.id === customerId);
     if (!customer) {
-      throw this.apiError('العميل غير موجود');
+      throw this.apiError('Customer not found.');
     }
     return customer;
   }
@@ -323,7 +323,7 @@ export class MockDhamenApi implements DhamenApi {
   private requireCustomerByIdentity(identityNumber: string): Customer {
     const customer = this.state.customers.find((item) => item.identityNumber === identityNumber.trim());
     if (!customer) {
-      throw this.apiError('لم يتم العثور على عميل بهذا رقم الهوية');
+      throw this.apiError('No customer was found with this identity number.');
     }
     return customer;
   }
@@ -331,7 +331,7 @@ export class MockDhamenApi implements DhamenApi {
   private requireSupplier(supplierId: string): Supplier {
     const supplier = this.state.suppliers.find((item) => item.id === supplierId);
     if (!supplier) {
-      throw this.apiError('المورد غير موجود');
+      throw this.apiError('Supplier not found.');
     }
     return supplier;
   }
@@ -339,7 +339,7 @@ export class MockDhamenApi implements DhamenApi {
   private requirePayment(paymentReferenceId: string): PaymentRecord {
     const payment = this.state.payments.find((item) => item.paymentReferenceId === paymentReferenceId);
     if (!payment) {
-      throw this.apiError('مرجع الدفع غير موجود');
+      throw this.apiError('Payment reference not found.');
     }
     return payment;
   }
@@ -348,7 +348,9 @@ export class MockDhamenApi implements DhamenApi {
     const list = kind === 'customer' ? this.state.customers : this.state.suppliers;
     if (list.some((item) => item.identityNumber === identityNumber.trim())) {
       throw this.apiError(
-        kind === 'customer' ? 'رقم هوية العميل مسجل مسبقًا' : 'رقم هوية المورد مسجل مسبقًا'
+        kind === 'customer'
+          ? 'This customer identity number is already registered.'
+          : 'This supplier identity number is already registered.'
       );
     }
   }
@@ -369,13 +371,13 @@ export class MockDhamenApi implements DhamenApi {
   private statusMessage(status: PaymentStatus): string {
     switch (status) {
       case 'Pending':
-        return 'الدفعة بانتظار المعالجة';
+        return 'Payment is awaiting processing.';
       case 'Processing':
-        return 'جاري معالجة الدفعة';
+        return 'Payment is being processed.';
       case 'Completed':
-        return 'اكتملت الدفعة بنجاح';
+        return 'Payment completed successfully.';
       case 'Failed':
-        return 'فشلت الدفعة';
+        return 'Payment failed.';
     }
   }
 

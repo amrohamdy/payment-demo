@@ -53,11 +53,11 @@ export class DemoWizardPage implements OnInit {
   readonly supplierBalance = signal<number | null>(null);
 
   readonly steps: MenuItem[] = [
-    { label: 'عميل' },
-    { label: 'إيداع' },
-    { label: 'مورد' },
-    { label: 'دفع' },
-    { label: 'متابعة' },
+    { label: 'Customer' },
+    { label: 'Deposit' },
+    { label: 'Supplier' },
+    { label: 'Payment' },
+    { label: 'Tracking' },
   ];
 
   readonly customerForm = this.fb.nonNullable.group({
@@ -121,13 +121,13 @@ export class DemoWizardPage implements OnInit {
         this.busy.set(false);
         this.createdCustomerId.set(res.customerId);
         this.paymentForm.controls.customerId.setValue(res.customerId);
-        this.messages.add({ severity: 'success', summary: 'عميل', detail: res.message });
+        this.messages.add({ severity: 'success', summary: 'Customer', detail: res.message });
         this.refreshLists();
         this.next();
       },
       error: (err: Error) => {
         this.busy.set(false);
-        this.messages.add({ severity: 'error', summary: 'فشل', detail: err.message });
+        this.messages.add({ severity: 'error', summary: 'Failed', detail: err.message });
       },
     });
   }
@@ -155,15 +155,15 @@ export class DemoWizardPage implements OnInit {
           this.customerBalance.set(balance.balance);
           this.messages.add({
             severity: 'success',
-            summary: 'إيداع',
-            detail: `الرصيد الحالي ${balance.balance}`,
+            summary: 'Deposit',
+            detail: `Current balance: ${balance.balance}`,
           });
           this.refreshLists();
           this.next();
         },
         error: (err: Error) => {
           this.busy.set(false);
-          this.messages.add({ severity: 'error', summary: 'فشل', detail: err.message });
+          this.messages.add({ severity: 'error', summary: 'Failed', detail: err.message });
         },
       });
   }
@@ -179,13 +179,13 @@ export class DemoWizardPage implements OnInit {
         this.busy.set(false);
         this.createdSupplierId.set(res.supplierId);
         this.paymentForm.controls.supplierId.setValue(res.supplierId);
-        this.messages.add({ severity: 'success', summary: 'مورد', detail: res.message });
+        this.messages.add({ severity: 'success', summary: 'Supplier', detail: res.message });
         this.refreshLists();
         this.next();
       },
       error: (err: Error) => {
         this.busy.set(false);
-        this.messages.add({ severity: 'error', summary: 'فشل', detail: err.message });
+        this.messages.add({ severity: 'error', summary: 'Failed', detail: err.message });
       },
     });
   }
@@ -212,13 +212,13 @@ export class DemoWizardPage implements OnInit {
         next: (res) => {
           this.busy.set(false);
           this.paymentReferenceId.set(res.paymentReferenceId);
-          this.messages.add({ severity: 'success', summary: 'دفعة', detail: res.message });
+          this.messages.add({ severity: 'success', summary: 'Payment', detail: res.message });
           this.refreshBalances();
           this.next();
         },
         error: (err: Error) => {
           this.busy.set(false);
-          this.messages.add({ severity: 'error', summary: 'فشل', detail: err.message });
+          this.messages.add({ severity: 'error', summary: 'Failed', detail: err.message });
         },
       });
   }
@@ -242,7 +242,7 @@ export class DemoWizardPage implements OnInit {
       },
       error: (err: Error) => {
         this.busy.set(false);
-        this.messages.add({ severity: 'error', summary: 'فشل', detail: err.message });
+        this.messages.add({ severity: 'error', summary: 'Failed', detail: err.message });
       },
     });
   }
@@ -276,14 +276,14 @@ export class DemoWizardPage implements OnInit {
     const suffix = createUuid().slice(0, 4);
     this.customerForm.reset({
       identityNumber: `1${String(Date.now()).slice(-9)}`,
-      name: `عميل تجريبي ${suffix}`,
+      name: `Demo Customer ${suffix}`,
       iban: 'SA0380000000608010167519',
       email: `customer.${suffix}@example.com`,
       mobile: '0512345678',
     });
     this.supplierForm.reset({
       identityNumber: `7${String(Date.now()).slice(-9)}`,
-      name: `مورد تجريبي ${suffix}`,
+      name: `Demo Supplier ${suffix}`,
       iban: 'SA0310000001234567890123',
       email: `supplier.${suffix}@example.com`,
       mobile: '0598765432',

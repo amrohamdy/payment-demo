@@ -94,7 +94,7 @@ export class PaymentsPage implements OnInit {
       },
       error: (err: Error) => {
         this.loading.set(false);
-        this.messages.add({ severity: 'error', summary: 'خطأ', detail: err.message });
+        this.messages.add({ severity: 'error', summary: 'Error', detail: err.message });
       },
     });
   }
@@ -145,7 +145,7 @@ export class PaymentsPage implements OnInit {
           this.formVisible.set(false);
           this.messages.add({
             severity: 'success',
-            summary: 'تم إنشاء الدفعة',
+            summary: 'Payment created',
             detail: res.message,
           });
           this.reload();
@@ -155,7 +155,7 @@ export class PaymentsPage implements OnInit {
         },
         error: (err: Error) => {
           this.saving.set(false);
-          this.messages.add({ severity: 'error', summary: 'فشل الدفع', detail: err.message });
+          this.messages.add({ severity: 'error', summary: 'Payment failed', detail: err.message });
         },
       });
   }
@@ -175,7 +175,7 @@ export class PaymentsPage implements OnInit {
         const summary = statuses.map((s) => `${s.status}`).join(' / ');
         this.messages.add({
           severity: 'info',
-          summary: 'تحديث الحالة',
+          summary: 'Status updated',
           detail: summary,
         });
         this.reload();
@@ -185,7 +185,7 @@ export class PaymentsPage implements OnInit {
       },
       error: (err: Error) => {
         this.refreshing.set(false);
-        this.messages.add({ severity: 'error', summary: 'خطأ', detail: err.message });
+        this.messages.add({ severity: 'error', summary: 'Error', detail: err.message });
       },
     });
   }

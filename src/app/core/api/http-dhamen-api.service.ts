@@ -56,7 +56,7 @@ export class HttpDhamenApi implements DhamenApi {
         const record = asRecord(res);
         return {
           customerId: readString(record, 'customerId', 'id'),
-          message: readString(record, 'message') || 'تم إنشاء العميل',
+          message: readString(record, 'message') || 'Customer created successfully.',
         };
       })
     );
@@ -68,7 +68,7 @@ export class HttpDhamenApi implements DhamenApi {
         const record = asRecord(res);
         return {
           customerId: readString(record, 'customerId', 'id'),
-          message: readString(record, 'message') || 'تم تحديث العميل',
+          message: readString(record, 'message') || 'Customer updated successfully.',
         };
       })
     );
@@ -82,7 +82,7 @@ export class HttpDhamenApi implements DhamenApi {
           customerId: readString(record, 'customerId', 'id') || body.customerId,
           amount: Number(record['amount'] ?? body.amount),
           newBalance: Number(record['newBalance'] ?? record['balance'] ?? 0),
-          message: readString(record, 'message') || 'تم الإيداع',
+          message: readString(record, 'message') || 'Deposit completed successfully.',
         };
       })
     );
@@ -107,7 +107,7 @@ export class HttpDhamenApi implements DhamenApi {
         const record = asRecord(res);
         return {
           supplierId: readString(record, 'supplierId', 'id'),
-          message: readString(record, 'message') || 'تم إنشاء المورد',
+          message: readString(record, 'message') || 'Supplier created successfully.',
         };
       })
     );
@@ -119,7 +119,7 @@ export class HttpDhamenApi implements DhamenApi {
         const record = asRecord(res);
         return {
           supplierId: readString(record, 'supplierId', 'id') || body.supplierId,
-          message: readString(record, 'message') || 'تم تحديث المورد',
+          message: readString(record, 'message') || 'Supplier updated successfully.',
         };
       })
     );
@@ -131,7 +131,7 @@ export class HttpDhamenApi implements DhamenApi {
       .pipe(
         map((res) => ({
           paymentReferenceId: res.paymentReferenceId || body.paymentReferenceId,
-          message: res.message || 'تم إنشاء الدفعة',
+          message: res.message || 'Payment created successfully.',
           lines: res.lines ?? [],
         }))
       );
@@ -195,7 +195,7 @@ export class HttpDhamenApi implements DhamenApi {
     return throwError(
       () =>
         new Error(
-          `HttpDhamenApi.${method} غير متاح بعد — استخدم apiMode: 'mock' أو أضف endpoint من الباك اند`
+          `HttpDhamenApi.${method} is not available yet. Use apiMode: 'mock' or add the backend endpoint.`
         )
     );
   }

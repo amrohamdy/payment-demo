@@ -7,8 +7,8 @@
 .table-card,
 .detail-card {
   background: #fff;
-  border-radius: 14px;
-  border: 1px solid #e8eef3;
+  border-radius: 10px;
+  border: 1px solid var(--dh-border);
   overflow: hidden;
 }
 
@@ -53,7 +53,7 @@
   gap: 1rem;
   padding: 0.85rem;
   border-radius: 10px;
-  background: #f8fafc;
+  background: #faf9fb;
 }
 
 .line__right {
@@ -93,9 +93,9 @@
 
 .line-editor {
   padding: 0.85rem;
-  border: 1px solid #e8eef3;
+  border: 1px solid var(--dh-border);
   border-radius: 10px;
-  background: #fbfdff;
+  background: #fcfbfd;
 }
 
 .check-label {

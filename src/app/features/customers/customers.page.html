@@ -1,29 +1,29 @@
 <app-page-header
-  eyebrow="إدارة الأطراف"
-  title="العملاء"
-  subtitle="إنشاء وتحديث العملاء وإيداع الأموال في الرصيد"
+  eyebrow="Parties"
+  title="Customers"
+  subtitle="Payers registered with Dhamen. Manage their details and escrow balances."
 >
-  <p-button label="تحديث" icon="pi pi-refresh" [outlined]="true" (onClick)="reload()" />
-  <p-button label="عميل جديد" icon="pi pi-plus" (onClick)="openCreate()" />
+  <p-button label="Refresh" icon="pi pi-refresh" [outlined]="true" (onClick)="reload()" />
+  <p-button label="New customer" icon="pi pi-plus" (onClick)="openCreate()" />
 </app-page-header>
 
 @if (loading()) {
   <div class="loading-wrap"><p-progressSpinner strokeWidth="4" /></div>
 } @else if (customers().length === 0) {
-  <app-empty-state title="لا يوجد عملاء" message="ابدأ بإنشاء أول عميل للديمو">
-    <p-button label="إنشاء عميل" icon="pi pi-plus" (onClick)="openCreate()" />
+  <app-empty-state title="No customers yet" message="Create your first customer to get started.">
+    <p-button label="Create customer" icon="pi pi-plus" (onClick)="openCreate()" />
   </app-empty-state>
 } @else {
   <div class="table-card">
     <p-table [value]="customers()" [paginator]="true" [rows]="8" responsiveLayout="scroll">
       <ng-template #header>
         <tr>
-          <th>الاسم</th>
-          <th>رقم الهوية</th>
-          <th>الجوال</th>
+          <th>Customer</th>
+          <th>Identity no.</th>
+          <th>Mobile</th>
           <th>IBAN</th>
-          <th>الرصيد</th>
-          <th>إجراءات</th>
+          <th>Balance</th>
+          <th>Actions</th>
         </tr>
       </ng-template>
       <ng-template #body let-customer>
@@ -40,7 +40,7 @@
                 [rounded]="true"
                 [text]="true"
                 (onClick)="openEdit(customer)"
-                pTooltip="تعديل"
+                pTooltip="Edit customer"
               />
               <p-button
                 icon="pi pi-plus-circle"
@@ -65,7 +65,7 @@
 }
 
 <p-dialog
-  [header]="editMode() ? 'تعديل عميل' : 'إنشاء عميل'"
+  [header]="editMode() ? 'Edit customer' : 'New customer'"
   [visible]="formVisible()"
   (visibleChange)="formVisible.set($event)"
   [modal]="true"
@@ -74,11 +74,11 @@
 >
   <form class="form-grid" [formGroup]="form" (ngSubmit)="saveCustomer()">
     <label>
-      <span>رقم الهوية / الإقامة</span>
+      <span>Identity number</span>
       <input pInputText formControlName="identityNumber" />
     </label>
     <label>
-      <span>الاسم</span>
+      <span>Name as per bank account</span>
       <input pInputText formControlName="name" />
     </label>
     <label>
@@ -86,18 +86,18 @@
       <input pInputText formControlName="iban" />
     </label>
     <label>
-      <span>البريد الإلكتروني</span>
+      <span>Email</span>
       <input pInputText formControlName="email" type="email" />
     </label>
     <label>
-      <span>الجوال</span>
+      <span>Mobile</span>
       <input pInputText formControlName="mobile" />
     </label>
   </form>
   <ng-template #footer>
-    <p-button label="إلغاء" [text]="true" (onClick)="formVisible.set(false)" />
+    <p-button label="Cancel" [text]="true" (onClick)="formVisible.set(false)" />
     <p-button
-      [label]="editMode() ? 'حفظ التعديل' : 'إنشاء'"
+      [label]="editMode() ? 'Save changes' : 'Create customer'"
       [loading]="saving()"
       (onClick)="saveCustomer()"
     />
@@ -105,7 +105,7 @@
 </p-dialog>
 
 <p-dialog
-  header="إيداع مبلغ"
+  header="Deposit money"
   [visible]="depositVisible()"
   (visibleChange)="depositVisible.set($event)"
   [modal]="true"
@@ -113,16 +113,18 @@
   [draggable]="false"
 >
   @if (selectedCustomer(); as customer) {
-    <p class="deposit-hint">العميل: <strong>{{ customer.name }}</strong> — الرصيد الحالي {{ customer.balance | sar }}</p>
+    <p class="deposit-hint">
+      Customer: <strong>{{ customer.name }}</strong> · Current balance {{ customer.balance | sar }}
+    </p>
   }
   <form [formGroup]="depositForm" class="form-grid">
     <label>
-      <span>المبلغ</span>
+      <span>Amount (SAR)</span>
       <p-inputNumber formControlName="amount" mode="decimal" [minFractionDigits]="2" [min]="0.01" />
     </label>
   </form>
   <ng-template #footer>
-    <p-button label="إلغاء" [text]="true" (onClick)="depositVisible.set(false)" />
-    <p-button label="إيداع" icon="pi pi-check" [loading]="saving()" (onClick)="submitDeposit()" />
+    <p-button label="Cancel" [text]="true" (onClick)="depositVisible.set(false)" />
+    <p-button label="Deposit" icon="pi pi-check" [loading]="saving()" (onClick)="submitDeposit()" />
   </ng-template>
 </p-dialog>

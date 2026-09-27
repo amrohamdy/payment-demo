@@ -1,9 +1,4 @@
 <aside class="sidebar">
-  <div class="sidebar__brand">
-    <div class="sidebar__brand-title">منصة ضامن</div>
-    <div class="sidebar__brand-sub">لوحة العمليات المالية</div>
-  </div>
-
   @for (section of sections; track section.title) {
     <div class="sidebar__section">
       <div class="sidebar__section-title">{{ section.title }}</div>
@@ -22,14 +17,20 @@
     </div>
   }
 
-  <div class="sidebar__footer">
-    <div class="sidebar__mode">
-      الوضع الحالي:
-      <strong>{{ apiMode === 'mock' ? 'Mock' : 'HTTP' }}</strong>
+  <!-- <div class="sidebar__footer">
+    <div class="sandbox-card">
+      <div class="sandbox-card__title">
+        <i class="pi pi-shield"></i>
+        Dhamen Sandbox
+      </div>
+      <p>Integration environment · API version 1. Data is stored locally for this demo.</p>
+      <div class="sidebar__mode">
+        Mode: <strong>{{ apiMode === 'mock' ? 'Mock' : 'HTTP' }}</strong>
+      </div>
     </div>
     @if (apiMode === 'mock') {
       <p-button
-        label="إعادة ضبط الديمو"
+        label="Reset sandbox"
         icon="pi pi-refresh"
         severity="secondary"
         [outlined]="true"
@@ -37,7 +38,7 @@
         (onClick)="resetDemo()"
       />
     }
-  </div>
+  </div> -->
 </aside>
 
 <p-confirmDialog />

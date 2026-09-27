@@ -1,10 +1,10 @@
 <app-page-header
-  eyebrow="العمليات المالية"
-  title="المدفوعات"
-  subtitle="إنشاء دفعة بمرجع فريد لمورد أو أكثر ومتابعة حالتها"
+  eyebrow="Pay-in & Pay-out"
+  title="Payments"
+  subtitle="Create supplier payments with a unique reference and track their status."
 >
-  <p-button label="تحديث" icon="pi pi-refresh" [outlined]="true" (onClick)="reload()" />
-  <p-button label="دفعة جديدة" icon="pi pi-plus" (onClick)="openCreate()" />
+  <p-button label="Refresh" icon="pi pi-refresh" [outlined]="true" (onClick)="reload()" />
+  <p-button label="New payment" icon="pi pi-plus" (onClick)="openCreate()" />
 </app-page-header>
 
 @if (loading()) {
@@ -13,18 +13,18 @@
   <div class="row g-3">
     <div class="col-12 col-xl-7">
       @if (payments().length === 0) {
-        <app-empty-state title="لا توجد مدفوعات" message="أنشئ أول دفعة من عميل إلى مورد">
-          <p-button label="إنشاء دفعة" icon="pi pi-plus" (onClick)="openCreate()" />
+        <app-empty-state title="No payments yet" message="Create the first payment to a supplier.">
+          <p-button label="Create payment" icon="pi pi-plus" (onClick)="openCreate()" />
         </app-empty-state>
       } @else {
         <div class="table-card">
           <p-table [value]="payments()" [paginator]="true" [rows]="6">
             <ng-template #header>
               <tr>
-                <th>مرجع الدفع</th>
-                <th>عدد الموردين</th>
-                <th>الحالة</th>
-                <th>التاريخ</th>
+                <th>Reference</th>
+                <th>Suppliers</th>
+                <th>Status</th>
+                <th>Created</th>
                 <th></th>
               </tr>
             </ng-template>
@@ -35,7 +35,7 @@
                 <td><app-status-badge [status]="payment.overallStatus" /></td>
                 <td>{{ payment.createdAt | date: 'medium' }}</td>
                 <td>
-                  <p-button label="عرض" [text]="true" (onClick)="viewPayment(payment)" />
+                  <p-button label="View" [text]="true" (onClick)="viewPayment(payment)" />
                 </td>
               </tr>
             </ng-template>
@@ -49,7 +49,7 @@
         <div class="detail-card">
           <div class="detail-card__head">
             <div>
-              <div class="detail-card__label">تفاصيل الدفعة</div>
+              <div class="detail-card__label">Payment details</div>
               <h2>{{ payment.paymentReferenceId }}</h2>
             </div>
             <app-status-badge [status]="payment.overallStatus" />
@@ -62,9 +62,9 @@
                   <strong>{{ line.supplierName }}</strong>
                   <div class="muted">
                     @if (line.customerName) {
-                      ممول من العميل: {{ line.customerName }}
+                      Funded by customer: {{ line.customerName }}
                     } @else {
-                      ممول من المنصة (customerId = null)
+                      Funded by authority (customerId = null)
                     }
                   </div>
                 </div>
@@ -78,18 +78,18 @@
 
           <div class="d-flex gap-2 flex-wrap mt-3">
             <p-button
-              label="تحديث الحالة"
+              label="Refresh status"
               icon="pi pi-sync"
               [loading]="refreshing()"
               (onClick)="refreshStatuses(payment)"
             />
-            <a routerLink="/customers"><p-button label="أرصدة العملاء" [outlined]="true" /></a>
-            <a routerLink="/suppliers"><p-button label="أرصدة الموردين" [outlined]="true" /></a>
+            <a routerLink="/customers"><p-button label="Customer balances" [outlined]="true" /></a>
+            <a routerLink="/suppliers"><p-button label="Supplier balances" [outlined]="true" /></a>
           </div>
         </div>
       } @else {
         <div class="detail-card detail-card--empty">
-          <p>اختر دفعة من القائمة لعرض التفاصيل ومتابعة الحالة.</p>
+          <p>Select a payment to view its details and track the status.</p>
         </div>
       }
     </div>
@@ -97,7 +97,7 @@
 }
 
 <p-dialog
-  header="إنشاء دفعة للموردين"
+  header="New supplier payment"
   [visible]="formVisible()"
   (visibleChange)="formVisible.set($event)"
   [modal]="true"
@@ -108,19 +108,19 @@
     <div class="row g-3">
       <div class="col-md-6">
         <label>
-          <span>مرجع الدفع</span>
+          <span>Payment reference ID</span>
           <input pInputText formControlName="paymentReferenceId" />
         </label>
       </div>
       <div class="col-md-6">
         <label>
-          <span>العميل الافتراضي (اختياري للتمويل)</span>
+          <span>Default customer (optional funding source)</span>
           <p-select
             formControlName="defaultCustomerId"
             [options]="customers()"
             optionLabel="name"
             optionValue="id"
-            placeholder="بدون عميل / تمويل المنصة"
+            placeholder="Authority funding / no customer"
             [showClear]="true"
             styleClass="w-100"
           />
@@ -134,20 +134,20 @@
           <div class="row g-2 align-items-end">
             <div class="col-md-4">
               <label>
-                <span>المورد</span>
+                <span>Supplier</span>
                 <p-select
                   formControlName="supplierId"
                   [options]="suppliers()"
                   optionLabel="name"
                   optionValue="id"
-                  placeholder="اختر المورد"
+                  placeholder="Select supplier"
                   styleClass="w-100"
                 />
               </label>
             </div>
             <div class="col-md-3">
               <label>
-                <span>المبلغ</span>
+                <span>Amount (SAR)</span>
                 <p-inputNumber
                   formControlName="amount"
                   mode="decimal"
@@ -160,7 +160,7 @@
             <div class="col-md-3">
               <label class="check-label">
                 <input type="checkbox" formControlName="fundFromCustomer" />
-                <span>تمويل من رصيد عميل</span>
+                <span>Fund from customer balance</span>
               </label>
             </div>
             <div class="col-md-2">
@@ -177,11 +177,11 @@
       }
     </div>
 
-    <p-button label="إضافة مورد" icon="pi pi-plus" [outlined]="true" (onClick)="addLine()" />
+    <p-button label="Add supplier" icon="pi pi-plus" [outlined]="true" (onClick)="addLine()" />
   </form>
 
   <ng-template #footer>
-    <p-button label="إلغاء" [text]="true" (onClick)="formVisible.set(false)" />
-    <p-button label="إنشاء الدفعة" icon="pi pi-check" [loading]="saving()" (onClick)="submitPayment()" />
+    <p-button label="Cancel" [text]="true" (onClick)="formVisible.set(false)" />
+    <p-button label="Create payment" icon="pi pi-check" [loading]="saving()" (onClick)="submitPayment()" />
   </ng-template>
 </p-dialog>

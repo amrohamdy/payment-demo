@@ -32,44 +32,44 @@ export class Sidebar {
   readonly apiMode = environment.apiMode;
   readonly sections: NavSection[] = [
     {
-      title: 'الأساسية',
-      items: [{ label: 'لوحة التحكم', route: '/dashboard', icon: 'pi pi-home' }],
+      title: 'OVERVIEW',
+      items: [{ label: 'Dashboard', route: '/dashboard', icon: 'pi pi-th-large' }],
     },
     {
-      title: 'إدارة الأطراف',
+      title: 'PARTIES',
       items: [
-        { label: 'العملاء', route: '/customers', icon: 'pi pi-users' },
-        { label: 'الموردون', route: '/suppliers', icon: 'pi pi-briefcase' },
+        { label: 'Customers', route: '/customers', icon: 'pi pi-users' },
+        { label: 'Suppliers', route: '/suppliers', icon: 'pi pi-building' },
       ],
     },
     {
-      title: 'العمليات المالية',
-      items: [{ label: 'المدفوعات', route: '/payments', icon: 'pi pi-wallet' }],
+      title: 'PAY-IN & PAY-OUT',
+      items: [{ label: 'Payments', route: '/payments', icon: 'pi pi-credit-card' }],
     },
   ];
 
   resetDemo(): void {
     this.confirm.confirm({
-      header: 'إعادة ضبط الديمو',
-      message: 'سيتم حذف العمليات المحلية وإعادة البيانات التجريبية. هل تريد المتابعة؟',
+      header: 'Reset sandbox data',
+      message: 'This will remove local transactions and restore the sample data. Continue?',
       icon: 'pi pi-refresh',
-      acceptLabel: 'إعادة الضبط',
-      rejectLabel: 'إلغاء',
+      acceptLabel: 'Reset data',
+      rejectLabel: 'Cancel',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
         this.api.resetDemoData().subscribe({
           next: () => {
             this.messages.add({
               severity: 'success',
-              summary: 'تم',
-              detail: 'تمت إعادة ضبط بيانات الديمو',
+              summary: 'Sandbox reset',
+              detail: 'The sample data has been restored.',
             });
             location.reload();
           },
           error: (err: Error) => {
             this.messages.add({
               severity: 'error',
-              summary: 'تعذر إعادة الضبط',
+              summary: 'Reset failed',
               detail: err.message,
             });
           },

@@ -6,13 +6,13 @@ import { RouterOutlet } from '@angular/router';
   imports: [RouterOutlet],
   template: `<router-outlet />`,
   host: {
-    dir: 'rtl',
+    dir: 'ltr',
   },
   styles: `
     :host {
       display: block;
       min-height: 100vh;
-      direction: rtl;
+      direction: ltr;
     }
   `,
 })

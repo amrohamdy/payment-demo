@@ -1,9 +1,9 @@
 <app-page-header
-  eyebrow="منصة ضامن"
-  title="لوحة التحكم"
-  subtitle="ملخص الأرصدة والعمليات المالية بين العملاء والموردين"
+  eyebrow="Overview"
+  title="Dashboard"
+  subtitle="A summary of customer and supplier balances and payment activity."
 >
-  <p-button label="تحديث" icon="pi pi-refresh" [outlined]="true" (onClick)="reload()" />
+  <p-button label="Refresh" icon="pi pi-refresh" [outlined]="true" (onClick)="reload()" />
 </app-page-header>
 
 @if (loading()) {
@@ -14,52 +14,52 @@
   <div class="row g-3 mb-4">
     <div class="col-12 col-md-6 col-xl-3">
       <div class="stat-card">
-        <div class="stat-card__label">العملاء</div>
+        <div class="stat-card__label">Total customers</div>
         <div class="stat-card__value">{{ data.customersCount }}</div>
-        <div class="stat-card__meta">إجمالي الأرصدة {{ data.customersBalanceTotal | sar }}</div>
+        <div class="stat-card__meta">Combined balance {{ data.customersBalanceTotal | sar }}</div>
       </div>
     </div>
     <div class="col-12 col-md-6 col-xl-3">
       <div class="stat-card">
-        <div class="stat-card__label">الموردون</div>
+        <div class="stat-card__label">Total suppliers</div>
         <div class="stat-card__value">{{ data.suppliersCount }}</div>
-        <div class="stat-card__meta">إجمالي الأرصدة {{ data.suppliersBalanceTotal | sar }}</div>
+        <div class="stat-card__meta">Combined balance {{ data.suppliersBalanceTotal | sar }}</div>
       </div>
     </div>
     <div class="col-12 col-md-6 col-xl-3">
       <div class="stat-card">
-        <div class="stat-card__label">عمليات الدفع</div>
+        <div class="stat-card__label">Payments</div>
         <div class="stat-card__value">{{ data.paymentsCount }}</div>
-        <div class="stat-card__meta">مرجع دفع واحد قد يشمل عدة موردين</div>
+        <div class="stat-card__meta">One reference may include multiple suppliers</div>
       </div>
     </div>
     <div class="col-12 col-md-6 col-xl-3">
       <div class="stat-card stat-card--accent">
-        <div class="stat-card__label">آخر حالة دفع</div>
+        <div class="stat-card__label">Latest payment status</div>
         @if (data.latestPayment; as payment) {
           <div class="stat-card__value stat-card__value--sm">{{ payment.paymentReferenceId }}</div>
           <div class="stat-card__meta">
             <app-status-badge [status]="payment.overallStatus" />
           </div>
         } @else {
-          <div class="stat-card__value stat-card__value--sm">لا توجد عمليات بعد</div>
+          <div class="stat-card__value stat-card__value--sm">No payments yet</div>
         }
       </div>
     </div>
   </div>
 
   <div class="panel">
-    <h2>مسار العمل السريع</h2>
+    <h2>Quick workflow</h2>
     <ol class="flow-list">
-      <li>سجّل عميلًا وأودع في رصيده</li>
-      <li>سجّل موردًا وحدد حد الصرف</li>
-      <li>أنشئ دفعة بمرجع فريد من العميل إلى المورد</li>
-      <li>تابع حالة الدفع وتأثيرها على الأرصدة</li>
+      <li>Create a customer and deposit funds into their balance.</li>
+      <li>Create a supplier and define the payout threshold.</li>
+      <li>Create a payment with a unique reference.</li>
+      <li>Track payment status and its effect on balances.</li>
     </ol>
     <div class="d-flex gap-2 flex-wrap">
-      <a routerLink="/customers"><p-button label="إدارة العملاء" [outlined]="true" /></a>
-      <a routerLink="/suppliers"><p-button label="إدارة الموردين" [outlined]="true" /></a>
-      <a routerLink="/payments"><p-button label="إنشاء دفعة" /></a>
+      <a routerLink="/customers"><p-button label="Manage customers" [outlined]="true" /></a>
+      <a routerLink="/suppliers"><p-button label="Manage suppliers" [outlined]="true" /></a>
+      <a routerLink="/payments"><p-button label="Create payment" /></a>
     </div>
   </div>
 }

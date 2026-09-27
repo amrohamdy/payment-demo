@@ -13,17 +13,17 @@ import { dhamenHttpInterceptor } from './core/config/http.interceptor';
 const DhamenPreset = definePreset(Aura, {
   semantic: {
     primary: {
-      50: '#eef7f3',
-      100: '#d5ebe1',
-      200: '#aed7c4',
-      300: '#7dba9f',
-      400: '#4f9b7b',
-      500: '#16845B',
-      600: '#137351',
-      700: '#0f5d42',
-      800: '#0c4a35',
-      900: '#093c2c',
-      950: '#052216',
+      50: '#f7f4fb',
+      100: '#eee8f6',
+      200: '#ded0ec',
+      300: '#c6addd',
+      400: '#a77fc8',
+      500: '#8254ae',
+      600: '#63339b',
+      700: '#512684',
+      800: '#44216c',
+      900: '#3a1e59',
+      950: '#241038',
     },
   },
 });
