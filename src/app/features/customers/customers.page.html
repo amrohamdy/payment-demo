@@ -69,30 +69,36 @@
   [visible]="formVisible()"
   (visibleChange)="formVisible.set($event)"
   [modal]="true"
-  [style]="{ width: 'min(560px, 95vw)' }"
+  [style]="{ width: 'min(480px, 95vw)' }"
   [draggable]="false"
+  styleClass="umran-dialog"
 >
+  <p class="dialog-hint">
+    {{ editMode() ? 'Update customer bank details used for funding.' : 'Register a customer who can fund supplier payments.' }}
+  </p>
   <form class="form-grid" [formGroup]="form" (ngSubmit)="saveCustomer()">
-    <label>
-      <span>Identity number</span>
+    <label class="field-label">
+      Identity number
       <input pInputText formControlName="identityNumber" />
     </label>
-    <label>
-      <span>Name as per bank account</span>
+    <label class="field-label">
+      Name as per bank account
       <input pInputText formControlName="name" />
     </label>
-    <label>
-      <span>IBAN</span>
+    <label class="field-label">
+      IBAN
       <input pInputText formControlName="iban" />
     </label>
-    <label>
-      <span>Email</span>
-      <input pInputText formControlName="email" type="email" />
-    </label>
-    <label>
-      <span>Mobile</span>
-      <input pInputText formControlName="mobile" />
-    </label>
+    <div class="form-grid form-grid--2">
+      <label class="field-label">
+        Email
+        <input pInputText formControlName="email" type="email" />
+      </label>
+      <label class="field-label">
+        Mobile
+        <input pInputText formControlName="mobile" />
+      </label>
+    </div>
   </form>
   <ng-template #footer>
     <p-button label="Cancel" [text]="true" (onClick)="formVisible.set(false)" />
@@ -109,22 +115,23 @@
   [visible]="depositVisible()"
   (visibleChange)="depositVisible.set($event)"
   [modal]="true"
-  [style]="{ width: 'min(420px, 95vw)' }"
+  [style]="{ width: 'min(400px, 95vw)' }"
   [draggable]="false"
+  styleClass="umran-dialog"
 >
   @if (selectedCustomer(); as customer) {
-    <p class="deposit-hint">
-      Customer: <strong>{{ customer.name }}</strong> · Current balance {{ customer.balance | sar }}
+    <p class="dialog-hint">
+      Deposit into <strong>{{ customer.name }}</strong> · Current balance {{ customer.balance | sar }}
     </p>
   }
   <form [formGroup]="depositForm" class="form-grid">
-    <label>
-      <span>Amount (SAR)</span>
-      <p-inputNumber formControlName="amount" mode="decimal" [minFractionDigits]="2" [min]="0.01" />
+    <label class="field-label">
+      Amount (SAR)
+      <p-inputNumber formControlName="amount" mode="decimal" [minFractionDigits]="2" [min]="0.01" styleClass="w-100" />
     </label>
   </form>
   <ng-template #footer>
     <p-button label="Cancel" [text]="true" (onClick)="depositVisible.set(false)" />
-    <p-button label="Deposit" icon="pi pi-check" [loading]="saving()" (onClick)="submitDeposit()" />
+    <p-button label="Deposit" [loading]="saving()" (onClick)="submitDeposit()" />
   </ng-template>
 </p-dialog>

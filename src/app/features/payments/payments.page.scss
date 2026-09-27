@@ -74,33 +74,102 @@
   font-size: 0.85rem;
 }
 
-.payment-form label {
+.payment-form {
   display: grid;
-  gap: 0.35rem;
-  font-size: 0.9rem;
+  gap: 1rem;
+}
+
+.form-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.form-grid--2 {
+  grid-template-columns: 1fr 1fr;
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.payment-form input[pInputText] {
   width: 100%;
 }
 
-.payment-form input {
+:host ::ng-deep .payment-form .p-inputnumber,
+:host ::ng-deep .payment-form .p-select {
   width: 100%;
 }
 
 .lines-editor {
   display: grid;
-  gap: 0.85rem;
-  margin: 1rem 0;
+  gap: 0.65rem;
+}
+
+.lines-editor__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #3f3a45;
 }
 
 .line-editor {
-  padding: 0.85rem;
-  border: 1px solid var(--dh-border);
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.9rem;
+  border: 1px solid #ebe7f0;
   border-radius: 10px;
   background: #fcfbfd;
 }
 
-.check-label {
-  display: flex !important;
-  align-items: center;
+.line-editor__top {
+  display: grid;
+  grid-template-columns: 1fr auto;
   gap: 0.5rem;
-  margin-bottom: 0.4rem;
+  align-items: start;
+}
+
+.line-editor__bottom {
+  display: grid;
+  grid-template-columns: minmax(140px, 180px) 1fr;
+  gap: 0.85rem;
+  align-items: end;
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+}
+
+.check-label {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.35rem;
+  color: #4a4452;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+}
+
+.check-label input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--dh-primary);
+  flex-shrink: 0;
+}
+
+:host ::ng-deep .line-editor__remove.p-button {
+  margin-top: 1.35rem;
+  width: 2.1rem;
+  height: 2.1rem;
+}
+
+:host ::ng-deep .add-line-btn.p-button {
+  justify-self: start;
+  border-style: dashed;
 }

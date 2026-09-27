@@ -82,9 +82,9 @@ textarea {
 
 .p-dialog {
   border: 1px solid var(--dh-border);
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 18px 48px rgb(25 16 38 / 16%);
+  box-shadow: 0 12px 40px rgb(25 16 38 / 14%);
 }
 
 .p-dialog .p-dialog-header,
@@ -94,7 +94,83 @@ textarea {
 }
 
 .p-dialog .p-dialog-header {
-  padding-bottom: 0.75rem;
+  padding: 1.1rem 1.25rem 0.85rem;
+  border-bottom: 1px solid #f0edf3;
+}
+
+.p-dialog .p-dialog-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--dh-text);
+}
+
+.p-dialog .p-dialog-header-actions .p-button {
+  width: 2rem;
+  height: 2rem;
+  color: #8b8491;
+}
+
+.p-dialog .p-dialog-content {
+  padding: 1.1rem 1.25rem 0.35rem;
+}
+
+.p-dialog .p-dialog-footer {
+  padding: 0.85rem 1.25rem 1.15rem;
+  border-top: 1px solid #f0edf3;
+  gap: 0.5rem;
+}
+
+.dialog-hint {
+  margin: -0.15rem 0 1rem;
+  color: var(--dh-muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.dialog-hint code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.74rem;
+  color: var(--dh-primary);
+}
+
+.field-label {
+  display: grid;
+  gap: 0.35rem;
+  width: 100%;
+  color: #3f3a45;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.field-help {
+  margin-top: -0.1rem;
+  color: #948e99;
+  font-size: 0.72rem;
+  font-weight: 400;
+}
+
+.p-dialog .p-inputtext,
+.p-dialog .p-select,
+.p-dialog .p-inputnumber-input {
+  border-radius: 8px;
+  border-color: #ddd7e3;
+  min-height: 2.35rem;
+  font-size: 0.875rem;
+}
+
+.p-dialog .p-inputtext:enabled:focus,
+.p-dialog .p-select:not(.p-disabled).p-focus,
+.p-dialog .p-inputnumber-input:enabled:focus {
+  border-color: var(--dh-primary);
+  box-shadow: 0 0 0 3px rgb(99 51 155 / 12%);
+}
+
+.p-dialog.umran-dialog .p-dialog-footer {
+  justify-content: flex-end;
+}
+
+.p-dialog.umran-dialog .p-dialog-footer .p-button-text {
+  color: var(--dh-primary);
 }
 
 .p-datatable .p-datatable-thead > tr > th {

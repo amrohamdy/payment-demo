@@ -101,87 +101,98 @@
   [visible]="formVisible()"
   (visibleChange)="formVisible.set($event)"
   [modal]="true"
-  [style]="{ width: 'min(720px, 96vw)' }"
+  [style]="{ width: 'min(560px, 96vw)' }"
   [draggable]="false"
+  styleClass="umran-dialog"
 >
+  <p class="dialog-hint">Create a payment to one or more suppliers. Optionally fund lines from a customer balance.</p>
+
   <form class="payment-form" [formGroup]="form">
-    <div class="row g-3">
-      <div class="col-md-6">
-        <label>
-          <span>Payment reference ID</span>
-          <input pInputText formControlName="paymentReferenceId" />
-        </label>
-      </div>
-      <div class="col-md-6">
-        <label>
-          <span>Default customer (optional funding source)</span>
-          <p-select
-            formControlName="defaultCustomerId"
-            [options]="customers()"
-            optionLabel="name"
-            optionValue="id"
-            placeholder="Authority funding / no customer"
-            [showClear]="true"
-            styleClass="w-100"
-          />
-        </label>
-      </div>
+    <div class="form-grid form-grid--2">
+      <label class="field-label">
+        Payment reference ID
+        <input pInputText formControlName="paymentReferenceId" placeholder="e.g. REF-2026-0001" />
+      </label>
+
+      <label class="field-label">
+        Default customer
+        <span class="field-help">Optional funding source</span>
+        <p-select
+          formControlName="defaultCustomerId"
+          [options]="customers()"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="No customer / authority"
+          [showClear]="true"
+          styleClass="w-100"
+        />
+      </label>
     </div>
 
     <div formArrayName="lines" class="lines-editor">
+      <div class="lines-editor__head">
+        <span>Supplier lines</span>
+        <span class="field-help">{{ lines.length }} line{{ lines.length === 1 ? '' : 's' }}</span>
+      </div>
+
       @for (line of lines.controls; track $index; let i = $index) {
         <div class="line-editor" [formGroupName]="i">
-          <div class="row g-2 align-items-end">
-            <div class="col-md-4">
-              <label>
-                <span>Supplier</span>
-                <p-select
-                  formControlName="supplierId"
-                  [options]="suppliers()"
-                  optionLabel="name"
-                  optionValue="id"
-                  placeholder="Select supplier"
-                  styleClass="w-100"
-                />
-              </label>
-            </div>
-            <div class="col-md-3">
-              <label>
-                <span>Amount (SAR)</span>
-                <p-inputNumber
-                  formControlName="amount"
-                  mode="decimal"
-                  [minFractionDigits]="2"
-                  [min]="0.01"
-                  styleClass="w-100"
-                />
-              </label>
-            </div>
-            <div class="col-md-3">
-              <label class="check-label">
-                <input type="checkbox" formControlName="fundFromCustomer" />
-                <span>Fund from customer balance</span>
-              </label>
-            </div>
-            <div class="col-md-2">
-              <p-button
-                icon="pi pi-trash"
-                severity="danger"
-                [text]="true"
-                [disabled]="lines.length === 1"
-                (onClick)="removeLine(i)"
+          <div class="line-editor__top">
+            <label class="field-label">
+              Supplier
+              <p-select
+                formControlName="supplierId"
+                [options]="suppliers()"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Select supplier"
+                styleClass="w-100"
               />
-            </div>
+            </label>
+            <p-button
+              icon="pi pi-trash"
+              severity="danger"
+              [text]="true"
+              [rounded]="true"
+              styleClass="line-editor__remove"
+              [disabled]="lines.length === 1"
+              (onClick)="removeLine(i)"
+            />
+          </div>
+
+          <div class="line-editor__bottom">
+            <label class="field-label">
+              Amount (SAR)
+              <p-inputNumber
+                formControlName="amount"
+                mode="decimal"
+                [minFractionDigits]="2"
+                [min]="0.01"
+                styleClass="w-100"
+                placeholder="0.00"
+              />
+            </label>
+
+            <label class="check-label">
+              <input type="checkbox" formControlName="fundFromCustomer" />
+              <span>Fund from customer balance</span>
+            </label>
           </div>
         </div>
       }
     </div>
 
-    <p-button label="Add supplier" icon="pi pi-plus" [outlined]="true" (onClick)="addLine()" />
+    <p-button
+      label="Add supplier"
+      icon="pi pi-plus"
+      [outlined]="true"
+      styleClass="add-line-btn"
+      (onClick)="addLine()"
+    />
   </form>
 
   <ng-template #footer>
     <p-button label="Cancel" [text]="true" (onClick)="formVisible.set(false)" />
-    <p-button label="Create payment" icon="pi pi-check" [loading]="saving()" (onClick)="submitPayment()" />
+    <p-button label="Create payment" [loading]="saving()" (onClick)="submitPayment()" />
   </ng-template>
 </p-dialog>

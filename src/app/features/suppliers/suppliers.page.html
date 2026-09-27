@@ -68,37 +68,45 @@
   [visible]="formVisible()"
   (visibleChange)="formVisible.set($event)"
   [modal]="true"
-  [style]="{ width: 'min(560px, 95vw)' }"
+  [style]="{ width: 'min(480px, 95vw)' }"
   [draggable]="false"
+  styleClass="umran-dialog"
 >
+  <p class="dialog-hint">
+    {{ editMode() ? 'Update supplier payout details and threshold.' : 'Add a beneficiary who can receive released escrow funds.' }}
+  </p>
   <form class="form-grid" [formGroup]="form">
-    <label>
-      <span>Supplier name as per bank account</span>
+    <label class="field-label">
+      Supplier name as per bank account
       <input pInputText formControlName="name" />
     </label>
-    <label>
-      <span>Identity / CR number</span>
+    <label class="field-label">
+      Identity / CR number
       <input pInputText formControlName="identityNumber" />
     </label>
-    <label>
-      <span>IBAN</span>
+    <label class="field-label">
+      IBAN
       <input pInputText formControlName="iban" />
     </label>
-    <label>
-      <span>Email</span>
-      <input pInputText formControlName="email" type="email" />
-    </label>
-    <label>
-      <span>Mobile</span>
-      <input pInputText formControlName="mobile" />
-    </label>
-    <label>
-      <span>Payout threshold (SAR)</span>
+    <div class="form-grid form-grid--2">
+      <label class="field-label">
+        Email
+        <input pInputText formControlName="email" type="email" />
+      </label>
+      <label class="field-label">
+        Mobile
+        <input pInputText formControlName="mobile" />
+      </label>
+    </div>
+    <label class="field-label">
+      Payout threshold (SAR)
+      <span class="field-help">Auto-payout when balance reaches this amount</span>
       <p-inputNumber
         formControlName="payoutThresholdAmount"
         mode="decimal"
         [minFractionDigits]="2"
         [min]="0.01"
+        styleClass="w-100"
       />
     </label>
   </form>
