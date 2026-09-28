@@ -140,7 +140,14 @@ export class CustomersPage implements OnInit {
     const value = this.form.getRawValue();
     this.saving.set(true);
     const request$ = this.editMode()
-      ? this.api.updateCustomer(value)
+      ? this.api.updateCustomer({
+          customerId: this.selectedCustomer()?.id ?? '',
+          identityNumber: value.identityNumber,
+          name: value.name,
+          iban: value.iban,
+          email: value.email,
+          mobile: value.mobile,
+        })
       : this.api.createCustomer(value);
 
     request$.subscribe({

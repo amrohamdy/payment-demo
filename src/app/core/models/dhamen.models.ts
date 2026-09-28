@@ -116,7 +116,9 @@ export interface CreateCustomerRequest {
   mobile: string;
 }
 
-export type UpdateCustomerRequest = CreateCustomerRequest;
+export interface UpdateCustomerRequest extends CreateCustomerRequest {
+  customerId: string;
+}
 
 export interface DepositMoneyRequest {
   customerId: string;

@@ -104,7 +104,7 @@ export class HttpDhamenApi implements DhamenApi {
       map((res) => {
         const r = asRecord(res.body);
         return {
-          customerId: readString(r, 'customerId', 'id') || body.identityNumber,
+          customerId: readString(r, 'customerId', 'id') || body.customerId,
           message: readString(r, 'message') || 'Customer updated successfully.',
         };
       })
