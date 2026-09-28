@@ -46,9 +46,5 @@ export class Sidebar {
         { label: 'Payments hub', route: '/payments', icon: 'pi pi-credit-card' },
       ],
     },
-    {
-      title: 'PAY-OUT',
-      items: [{ label: 'Payouts & Splits', route: '/payouts-splits', icon: 'pi pi-share-alt' }],
-    },
   ];
 }
