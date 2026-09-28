@@ -141,7 +141,7 @@ export class ReleaseRequestsPage implements OnInit {
     this.loading.set(true);
     forkJoin({
       requests: this.api.listReleaseRequests({ page: 1, pageSize: 100 }),
-      lines: this.api.listPaymentScheduleLines({ page: 1, pageSize: 200 }),
+      lines: this.api.listPaymentScheduleLines({ page: 1, pageSize: 100 }),
       penalties: this.api.listReleaseRequestPenalties({ page: 1, pageSize: 100 }),
     }).subscribe({
       next: ({ requests, lines, penalties }) => {
