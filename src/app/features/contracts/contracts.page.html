@@ -119,18 +119,27 @@
   styleClass="umran-dialog"
 >
   <div class="schedule-summary">
+    <div class="schedule-total">
+      <span class="schedule-total__label">Contract total</span>
+      <strong>{{ (selected()?.totalAmount ?? 0) | sar }}</strong>
+    </div>
     <p-tag
-      [severity]="schedulePercentOk() ? 'success' : 'warn'"
-      [value]="'% sum: ' + (schedulePercentSum() | number: '1.0-2')"
+      [severity]="schedulePercentOk() ? 'success' : schedulePercentSum() > 100 ? 'danger' : 'warn'"
+      [value]="'% sum: ' + (schedulePercentSum() | number: '1.0-2') + ' / 100'"
     />
     <p-tag
-      [severity]="scheduleAmountOk() ? 'success' : 'warn'"
+      [severity]="scheduleAmountOk() ? 'success' : scheduleAmountSum() > (selected()?.totalAmount ?? 0) ? 'danger' : 'warn'"
       [value]="'Amount sum: ' + (scheduleAmountSum() | number: '1.2-2')"
     />
-    @if (!schedulePercentOk()) {
+    <span class="hint">Remaining: {{ percentRemaining() | number: '1.0-2' }}% · {{ amountRemaining() | sar }}</span>
+    @if (schedulePercentSum() > 100) {
+      <span class="hint warn">Percentages exceed 100%.</span>
+    } @else if (!schedulePercentOk()) {
       <span class="hint warn">Percentages should total 100%.</span>
     }
-    @if (!scheduleAmountOk()) {
+    @if (scheduleAmountSum() > (selected()?.totalAmount ?? 0)) {
+      <span class="hint warn">Amounts exceed contract total.</span>
+    } @else if (!scheduleAmountOk()) {
       <span class="hint warn">Amounts should match contract total.</span>
     }
   </div>
@@ -202,12 +211,24 @@
     </label>
     <div class="grid-2">
       <label>
-        <span>Percentage</span>
-        <p-inputNumber formControlName="percentage" [min]="0" [max]="100" styleClass="w-100" />
+        <span>Percentage (max {{ percentCap() | number: '1.0-2' }}%)</span>
+        <p-inputNumber
+          formControlName="percentage"
+          [min]="0"
+          [max]="percentCap()"
+          styleClass="w-100"
+        />
       </label>
       <label>
-        <span>Amount</span>
-        <p-inputNumber formControlName="amount" mode="decimal" [minFractionDigits]="2" styleClass="w-100" />
+        <span>Amount (max {{ amountCap() | sar }})</span>
+        <p-inputNumber
+          formControlName="amount"
+          mode="decimal"
+          [minFractionDigits]="2"
+          [min]="0.01"
+          [max]="amountCap()"
+          styleClass="w-100"
+        />
       </label>
     </div>
     <div class="actions">

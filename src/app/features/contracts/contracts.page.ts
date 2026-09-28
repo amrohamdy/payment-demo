@@ -25,6 +25,7 @@ import {
 } from '../../core/utils/business.validators';
 import { holderTypeLabel } from '../../core/utils/api-mappers';
 import { positiveAmountValidator } from '../../core/utils/validators';
+import { roundMoney } from '../../core/utils/money.utils';
 import { EmptyState } from '../../shared/components/empty-state/empty-state';
 import { PageHeader } from '../../shared/components/page-header/page-header';
 import { SarPipe } from '../../shared/pipes/sar.pipe';
@@ -89,10 +90,34 @@ export class ContractsPage implements OnInit {
     );
   });
   readonly schedulePercentSum = computed(() =>
-    this.scheduleLines().reduce((acc, l) => acc + l.percentage, 0)
+    roundMoney(this.scheduleLines().reduce((acc, l) => acc + l.percentage, 0))
   );
   readonly scheduleAmountSum = computed(() =>
-    this.scheduleLines().reduce((acc, l) => acc + l.amount, 0)
+    roundMoney(this.scheduleLines().reduce((acc, l) => acc + l.amount, 0))
+  );
+  /** Max % this line may use without exceeding 100 across all lines. */
+  readonly percentCap = computed(() => {
+    const editingId = this.editingLineId();
+    const usedOthers = this.scheduleLines()
+      .filter((l) => l.id !== editingId)
+      .reduce((acc, l) => acc + l.percentage, 0);
+    return roundMoney(Math.max(0, 100 - usedOthers));
+  });
+  /** Max amount this line may use without exceeding contract total. */
+  readonly amountCap = computed(() => {
+    const contract = this.selected();
+    if (!contract) return 0;
+    const editingId = this.editingLineId();
+    const usedOthers = this.scheduleLines()
+      .filter((l) => l.id !== editingId)
+      .reduce((acc, l) => acc + l.amount, 0);
+    return roundMoney(Math.max(0, contract.totalAmount - usedOthers));
+  });
+  readonly amountRemaining = computed(() =>
+    roundMoney(Math.max(0, (this.selected()?.totalAmount ?? 0) - this.scheduleAmountSum()))
+  );
+  readonly percentRemaining = computed(() =>
+    roundMoney(Math.max(0, 100 - this.schedulePercentSum()))
   );
 
   readonly form = this.fb.nonNullable.group({
@@ -135,6 +160,7 @@ export class ContractsPage implements OnInit {
   });
 
   readonly lineEditMode = signal(false);
+  readonly editingLineId = signal<string | null>(null);
 
   ngOnInit(): void {
     this.reload();
@@ -252,6 +278,7 @@ export class ContractsPage implements OnInit {
         ? this.selected()!.escrowAccountId
         : (this.supplierEscrowOptions()[0]?.id ?? null);
     this.lineEditMode.set(false);
+    this.editingLineId.set(null);
     this.lineForm.reset({
       id: '',
       sequenceNo: nextSeq,
@@ -265,6 +292,7 @@ export class ContractsPage implements OnInit {
 
   openLineEdit(line: PaymentScheduleLine): void {
     this.lineEditMode.set(true);
+    this.editingLineId.set(line.id);
     this.lineForm.reset({
       id: line.id,
       sequenceNo: line.sequenceNo,
@@ -283,14 +311,40 @@ export class ContractsPage implements OnInit {
       return;
     }
     const value = this.lineForm.getRawValue();
+    const percentage = Number(value.percentage);
+    const amount = Number(value.amount);
+    const editingId = this.editingLineId();
+    const otherLines = this.scheduleLines().filter((l) => l.id !== editingId);
+    const percentSum = roundMoney(
+      otherLines.reduce((acc, l) => acc + l.percentage, 0) + percentage
+    );
+    const amountSum = roundMoney(otherLines.reduce((acc, l) => acc + l.amount, 0) + amount);
+
+    if (percentSum > 100.01) {
+      this.messages.add({
+        severity: 'warn',
+        summary: 'Percentage exceeded',
+        detail: `Schedule percentages would be ${percentSum}% (max 100%). Remaining: ${this.percentCap()}%.`,
+      });
+      return;
+    }
+    if (amountSum > contract.totalAmount + 0.01) {
+      this.messages.add({
+        severity: 'warn',
+        summary: 'Amount exceeded',
+        detail: `Schedule amounts would be ${amountSum} (contract total ${contract.totalAmount}). Remaining: ${this.amountCap()}.`,
+      });
+      return;
+    }
+
     this.saving.set(true);
     const request$ = this.lineEditMode()
       ? this.api.updatePaymentScheduleLine({
           id: value.id,
           sequenceNo: Number(value.sequenceNo),
           title: value.title,
-          percentage: Number(value.percentage),
-          amount: Number(value.amount),
+          percentage,
+          amount,
           dueDate: value.dueDate,
           escrowAccountId: value.escrowAccountId,
         })
@@ -298,8 +352,8 @@ export class ContractsPage implements OnInit {
           contractId: contract.id,
           sequenceNo: Number(value.sequenceNo),
           title: value.title,
-          percentage: Number(value.percentage),
-          amount: Number(value.amount),
+          percentage,
+          amount,
           dueDate: value.dueDate,
           escrowAccountId: value.escrowAccountId,
         });
@@ -308,6 +362,7 @@ export class ContractsPage implements OnInit {
       next: () => {
         this.saving.set(false);
         this.lineEditMode.set(false);
+        this.editingLineId.set(null);
         this.messages.add({ severity: 'success', summary: 'Saved', detail: 'Schedule line saved.' });
         this.reloadSchedule(contract.id);
         this.openLineCreate();

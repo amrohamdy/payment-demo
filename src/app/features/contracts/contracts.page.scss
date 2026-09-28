@@ -44,6 +44,34 @@
   margin-bottom: 1rem;
 }
 
+.schedule-total {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--dh-border);
+  background: #faf8fc;
+  margin-inline-end: 0.35rem;
+}
+
+.schedule-total__label {
+  font-size: 0.68rem;
+  color: var(--dh-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.schedule-total strong {
+  font-size: 0.95rem;
+  color: var(--dh-text);
+}
+
+.hint {
+  color: var(--dh-muted);
+  font-size: 0.78rem;
+}
+
 .hint.warn {
   color: var(--dh-warning);
   font-size: 0.78rem;
