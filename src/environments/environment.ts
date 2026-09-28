@@ -1,9 +1,7 @@
 export const environment = {
   production: true,
-  apiMode: 'http' as 'mock' | 'http',
-  /** Replace after deploy, or ship public/runtime-config.json without rebuild. */
+  /** Host only — paths are `/api/dhamen/...`. Override via runtime-config.json or UI. */
   baseUrl: 'https://localhost:7134',
   currency: 'SAR',
-  mockLatencyMs: 0,
   authorityProfileId: null as string | null,
 };

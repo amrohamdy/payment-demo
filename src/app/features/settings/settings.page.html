@@ -1,7 +1,7 @@
 <app-page-header
   eyebrow="System"
   title="API settings"
-  subtitle="Point the demo at the live backend without rebuilding. Changes reload the app."
+  subtitle="Point the app at the live backend without rebuilding. Changes reload the app."
 />
 
 <div class="panel">
@@ -9,7 +9,7 @@
     <span>Health:</span>
     <p-tag
       [severity]="
-        health.status() === 'live' || health.status() === 'mock'
+        health.status() === 'live'
           ? 'success'
           : health.status() === 'unavailable'
             ? 'danger'
@@ -22,16 +22,6 @@
   </div>
 
   <form [formGroup]="form" class="form-grid" (ngSubmit)="save()">
-    <label>
-      <span>Mode</span>
-      <p-select
-        formControlName="apiMode"
-        [options]="modeOptions"
-        optionLabel="label"
-        optionValue="value"
-        styleClass="w-100"
-      />
-    </label>
     <label>
       <span>Base URL (host only, no /api/dhamen)</span>
       <input pInputText formControlName="baseUrl" placeholder="https://localhost:7134" />

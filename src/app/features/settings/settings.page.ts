@@ -2,7 +2,6 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
-import { Select } from 'primeng/select';
 import { MessageService } from 'primeng/api';
 import { Tag } from 'primeng/tag';
 import {
@@ -14,7 +13,7 @@ import { PageHeader } from '../../shared/components/page-header/page-header';
 
 @Component({
   selector: 'app-settings-page',
-  imports: [PageHeader, Button, ReactiveFormsModule, InputText, Select, Tag],
+  imports: [PageHeader, Button, ReactiveFormsModule, InputText, Tag],
   templateUrl: './settings.page.html',
   styleUrl: './settings.page.scss',
 })
@@ -25,13 +24,7 @@ export class SettingsPage implements OnInit {
 
   readonly saved = signal(false);
 
-  readonly modeOptions = [
-    { label: 'Mock (local sandbox)', value: 'mock' },
-    { label: 'HTTP (live backend)', value: 'http' },
-  ];
-
   readonly form = this.fb.nonNullable.group({
-    apiMode: this.fb.nonNullable.control<'mock' | 'http'>('mock', Validators.required),
     baseUrl: ['', Validators.required],
     authorityProfileId: [''],
   });
@@ -39,7 +32,6 @@ export class SettingsPage implements OnInit {
   ngOnInit(): void {
     const config = getRuntimeConfig();
     this.form.reset({
-      apiMode: config.apiMode,
       baseUrl: config.baseUrl,
       authorityProfileId: config.authorityProfileId ?? '',
     });
@@ -53,7 +45,6 @@ export class SettingsPage implements OnInit {
     }
     const value = this.form.getRawValue();
     saveRuntimeConfig({
-      apiMode: value.apiMode,
       baseUrl: value.baseUrl.trim().replace(/\/$/, ''),
       authorityProfileId: value.authorityProfileId.trim() || null,
     });
@@ -61,7 +52,7 @@ export class SettingsPage implements OnInit {
     this.messages.add({
       severity: 'success',
       summary: 'Saved',
-      detail: 'API settings saved. Reloading to apply provider mode…',
+      detail: 'API settings saved. Reloading…',
     });
     setTimeout(() => location.reload(), 700);
   }

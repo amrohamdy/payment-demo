@@ -573,9 +573,7 @@ export class HttpDhamenApi implements DhamenApi {
   }
 
   resetDemoData(): Observable<void> {
-    return throwError(
-      () => new Error('Reset is only available in Mock mode. Clear activity ledger from settings if needed.')
-    );
+    return throwError(() => new Error('Reset sandbox is not available against the live API.'));
   }
 
   checkHealth(): Observable<boolean> {

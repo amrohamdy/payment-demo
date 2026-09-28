@@ -1,7 +1,5 @@
 {
-  "apiMode": "mock",
   "baseUrl": "https://localhost:7134",
   "currency": "SAR",
-  "mockLatencyMs": 350,
   "authorityProfileId": null
 }

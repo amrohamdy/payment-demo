@@ -1,10 +1,8 @@
 import { environment } from '../../../environments/environment';
 
 export interface RuntimeConfig {
-  apiMode: 'mock' | 'http';
   baseUrl: string;
   currency: string;
-  mockLatencyMs: number;
   authorityProfileId: string | null;
 }
 
@@ -14,10 +12,8 @@ let cached: RuntimeConfig | null = null;
 
 export function defaultRuntimeConfig(): RuntimeConfig {
   return {
-    apiMode: environment.apiMode,
     baseUrl: environment.baseUrl.replace(/\/$/, ''),
     currency: environment.currency,
-    mockLatencyMs: environment.mockLatencyMs,
     authorityProfileId: environment.authorityProfileId ?? null,
   };
 }
@@ -32,7 +28,7 @@ export function getRuntimeConfig(): RuntimeConfig {
       const parsed = JSON.parse(raw) as Partial<RuntimeConfig>;
       cached = {
         ...defaultRuntimeConfig(),
-        ...parsed,
+        ...pickConfig(parsed),
         baseUrl: String(parsed.baseUrl ?? environment.baseUrl).replace(/\/$/, ''),
       };
       return cached;
@@ -47,7 +43,7 @@ export function getRuntimeConfig(): RuntimeConfig {
 export function saveRuntimeConfig(patch: Partial<RuntimeConfig>): RuntimeConfig {
   const next: RuntimeConfig = {
     ...getRuntimeConfig(),
-    ...patch,
+    ...pickConfig(patch),
     baseUrl: String(patch.baseUrl ?? getRuntimeConfig().baseUrl).replace(/\/$/, ''),
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
@@ -65,9 +61,9 @@ export async function loadRuntimeConfigFromFile(): Promise<RuntimeConfig> {
     const res = await fetch('/runtime-config.json', { cache: 'no-store' });
     if (res.ok) {
       const file = (await res.json()) as Partial<RuntimeConfig>;
-      const merged = {
+      const merged: RuntimeConfig = {
         ...defaultRuntimeConfig(),
-        ...file,
+        ...pickConfig(file),
         baseUrl: String(file.baseUrl ?? environment.baseUrl).replace(/\/$/, ''),
       };
       // File wins over env defaults, but localStorage wins over file for demo switching.
@@ -81,4 +77,14 @@ export async function loadRuntimeConfigFromFile(): Promise<RuntimeConfig> {
     // file optional
   }
   return getRuntimeConfig();
+}
+
+function pickConfig(source: Partial<RuntimeConfig>): Partial<RuntimeConfig> {
+  const next: Partial<RuntimeConfig> = {};
+  if (source.baseUrl != null) next.baseUrl = String(source.baseUrl).replace(/\/$/, '');
+  if (source.currency != null) next.currency = String(source.currency);
+  if (source.authorityProfileId !== undefined) {
+    next.authorityProfileId = source.authorityProfileId ? String(source.authorityProfileId) : null;
+  }
+  return next;
 }

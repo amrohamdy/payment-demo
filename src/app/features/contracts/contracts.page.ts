@@ -319,7 +319,7 @@ export class ContractsPage implements OnInit {
   removeContract(contract: Contract): void {
     this.confirm.confirm({
       header: 'Delete contract',
-      message: `Delete ${contract.contractNumber}? Schedule lines will also be removed in mock mode.`,
+      message: `Delete ${contract.contractNumber}? Related schedule lines may remain on the backend.`,
       acceptLabel: 'Delete',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
