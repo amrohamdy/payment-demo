@@ -23,6 +23,7 @@ import {
   scheduleAmountSumOk,
   schedulePercentSumOk,
 } from '../../core/utils/business.validators';
+import { holderTypeLabel } from '../../core/utils/api-mappers';
 import { positiveAmountValidator } from '../../core/utils/validators';
 import { EmptyState } from '../../shared/components/empty-state/empty-state';
 import { PageHeader } from '../../shared/components/page-header/page-header';
@@ -61,6 +62,16 @@ export class ContractsPage implements OnInit {
   readonly contracts = signal<Contract[]>([]);
   readonly escrowAccounts = signal<EscrowAccount[]>([]);
   readonly scheduleLines = signal<PaymentScheduleLine[]>([]);
+  /** Escrow accounts shown as "Supplier" options for schedule lines (`escrowAccountId`). */
+  readonly supplierEscrowOptions = computed(() => {
+    const all = this.escrowAccounts();
+    const suppliers = all.filter((a) => holderTypeLabel(a.holderType) === 'Supplier');
+    const source = suppliers.length ? suppliers : all;
+    return source.map((a) => ({
+      id: a.id,
+      label: `${a.name} · ${a.viban || a.bban || a.id.slice(0, 8)}`,
+    }));
+  });
   readonly formVisible = signal(false);
   readonly scheduleVisible = signal(false);
   readonly editMode = signal(false);
@@ -120,7 +131,7 @@ export class ContractsPage implements OnInit {
     ]),
     amount: this.fb.control<number | null>(null, [Validators.required, positiveAmountValidator()]),
     dueDate: ['', Validators.required],
-    escrowAccountId: this.fb.control<string | null>(null),
+    escrowAccountId: this.fb.control<string | null>(null, Validators.required),
   });
 
   readonly lineEditMode = signal(false);
@@ -235,6 +246,11 @@ export class ContractsPage implements OnInit {
   openLineCreate(): void {
     const nextSeq =
       this.scheduleLines().reduce((max, l) => Math.max(max, l.sequenceNo), 0) + 1;
+    const defaultEscrow =
+      this.selected()?.escrowAccountId &&
+      this.supplierEscrowOptions().some((o) => o.id === this.selected()?.escrowAccountId)
+        ? this.selected()!.escrowAccountId
+        : (this.supplierEscrowOptions()[0]?.id ?? null);
     this.lineEditMode.set(false);
     this.lineForm.reset({
       id: '',
@@ -243,7 +259,7 @@ export class ContractsPage implements OnInit {
       percentage: null,
       amount: null,
       dueDate: new Date().toISOString().slice(0, 10),
-      escrowAccountId: this.selected()?.escrowAccountId ?? null,
+      escrowAccountId: defaultEscrow,
     });
   }
 

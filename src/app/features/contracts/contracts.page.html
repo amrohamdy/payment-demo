@@ -141,6 +141,7 @@
         <tr>
           <th>#</th>
           <th>Title</th>
+          <th>Supplier</th>
           <th>%</th>
           <th>Amount</th>
           <th>Due</th>
@@ -151,6 +152,7 @@
         <tr>
           <td>{{ line.sequenceNo }}</td>
           <td>{{ line.title }}</td>
+          <td>{{ escrowName(line.escrowAccountId) }}</td>
           <td>{{ line.percentage }}</td>
           <td>{{ line.amount | sar }}</td>
           <td>{{ line.dueDate }}</td>
@@ -185,6 +187,18 @@
     <label>
       <span>Title</span>
       <input pInputText formControlName="title" />
+    </label>
+    <label>
+      <span>Supplier</span>
+      <p-select
+        formControlName="escrowAccountId"
+        [options]="supplierEscrowOptions()"
+        optionLabel="label"
+        optionValue="id"
+        placeholder="Select supplier escrow account"
+        appendTo="body"
+        styleClass="w-100"
+      />
     </label>
     <div class="grid-2">
       <label>
