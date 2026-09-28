@@ -63,16 +63,18 @@ export class ContractsPage implements OnInit {
   readonly contracts = signal<Contract[]>([]);
   readonly escrowAccounts = signal<EscrowAccount[]>([]);
   readonly scheduleLines = signal<PaymentScheduleLine[]>([]);
-  /** Escrow accounts shown as "Supplier" options for schedule lines (`escrowAccountId`). */
-  readonly supplierEscrowOptions = computed(() => {
-    const all = this.escrowAccounts();
-    const suppliers = all.filter((a) => holderTypeLabel(a.holderType) === 'Supplier');
-    const source = suppliers.length ? suppliers : all;
-    return source.map((a) => ({
-      id: a.id,
-      label: `${a.name} · ${a.viban || a.bban || a.id.slice(0, 8)}`,
-    }));
-  });
+  /** Escrow accounts shown as "Supplier" options: Supplier + Authority only. */
+  readonly supplierEscrowOptions = computed(() =>
+    this.escrowAccounts()
+      .filter((a) => {
+        const type = holderTypeLabel(a.holderType);
+        return type === 'Supplier' || type === 'Authority';
+      })
+      .map((a) => ({
+        id: a.id,
+        label: `${a.name} · ${a.viban || a.bban || a.id.slice(0, 8)}`,
+      }))
+  );
   readonly formVisible = signal(false);
   readonly scheduleVisible = signal(false);
   readonly editMode = signal(false);
