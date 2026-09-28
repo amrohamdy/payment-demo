@@ -18,6 +18,10 @@ describe('validators', () => {
   it('validates mobile', () => {
     const control = new FormControl('0512345678');
     expect(saudiMobileValidator()(control)).toBeNull();
+    control.setValue('+966512345678');
+    expect(saudiMobileValidator()(control)).toBeNull();
+    control.setValue('966512345678');
+    expect(saudiMobileValidator()(control)).toBeNull();
     control.setValue('0412345678');
     expect(saudiMobileValidator()(control)).toEqual({ saudiMobile: true });
   });

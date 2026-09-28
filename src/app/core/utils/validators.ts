@@ -1,7 +1,8 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 const SAUDI_IBAN_PATTERN = /^SA[0-9]{22}$/i;
-const MOBILE_PATTERN = /^05[0-9]{8}$/;
+/** Local `05xxxxxxxx` or international `9665xxxxxxxx` / `+9665xxxxxxxx`. */
+const MOBILE_PATTERN = /^(?:\+?966|0)5[0-9]{8}$/;
 const IDENTITY_PATTERN = /^[12][0-9]{9}$/;
 
 export function saudiIbanValidator(): ValidatorFn {
