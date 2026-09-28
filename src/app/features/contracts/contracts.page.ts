@@ -170,7 +170,7 @@ export class ContractsPage implements OnInit {
     this.loading.set(true);
     forkJoin({
       contracts: this.api.listContracts({ page: 1, pageSize: 100 }),
-      escrow: this.api.listEscrowAccounts({ page: 1, pageSize: 100 }),
+      escrow: this.api.listEscrowAccounts({ page: 1, pageSize: 1000 }),
     }).subscribe({
       next: ({ contracts, escrow }) => {
         this.contracts.set(contracts.items);

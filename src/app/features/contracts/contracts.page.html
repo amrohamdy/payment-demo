@@ -205,6 +205,8 @@
         optionLabel="label"
         optionValue="id"
         placeholder="Select supplier escrow account"
+        [filter]="supplierEscrowOptions().length > 6"
+        filterBy="label"
         appendTo="body"
         styleClass="w-100"
       />
