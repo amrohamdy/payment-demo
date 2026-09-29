@@ -5,7 +5,6 @@
 >
   <p-button label="Refresh" icon="pi pi-refresh" [outlined]="true" (onClick)="reload()" />
   <p-button label="Pay-in lifecycle" icon="pi pi-bolt" [outlined]="true" (onClick)="openLifecycle()" />
-  <a routerLink="/payouts-splits"><p-button label="New payout" icon="pi pi-share-alt" /></a>
 </app-page-header>
 
 @if (loading()) {
@@ -16,10 +15,8 @@
       @if (payments().length === 0) {
         <app-empty-state
           title="No payments yet"
-          message="Create supplier payouts from Payouts & Splits. This hub tracks history and pay-in actions."
-        >
-          <a routerLink="/payouts-splits"><p-button label="Go to Payouts & Splits" icon="pi pi-share-alt" /></a>
-        </app-empty-state>
+          message="This hub tracks payment history and pay-in actions."
+        />
       } @else {
         <div class="table-card">
           <p-table [value]="payments()" [paginator]="true" [rows]="6">
