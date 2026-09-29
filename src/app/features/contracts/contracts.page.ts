@@ -144,8 +144,8 @@ export class ContractsPage implements OnInit {
       Validators.required,
       percentageRangeValidator(),
     ]),
-    customerEscrowAccountId: this.fb.control<string | null>(null),
-    supplierEscrowAccountId: this.fb.control<string | null>(null),
+    escrowCustomerId: this.fb.control<string | null>(null),
+    escrowSupplierId: this.fb.control<string | null>(null),
   });
 
   readonly lineForm = this.fb.nonNullable.group({
@@ -212,8 +212,8 @@ export class ContractsPage implements OnInit {
       sceFeePercentage: 0,
       moatamedFeePercentage: 0,
       vatPercentage: 15,
-      customerEscrowAccountId: null,
-      supplierEscrowAccountId: null,
+      escrowCustomerId: null,
+      escrowSupplierId: null,
     });
     this.formVisible.set(true);
   }
@@ -229,8 +229,8 @@ export class ContractsPage implements OnInit {
       sceFeePercentage: contract.sceFeePercentage,
       moatamedFeePercentage: contract.moatamedFeePercentage,
       vatPercentage: contract.vatPercentage,
-      customerEscrowAccountId: contract.customerEscrowAccountId,
-      supplierEscrowAccountId: contract.supplierEscrowAccountId,
+      escrowCustomerId: contract.escrowCustomerId,
+      escrowSupplierId: contract.escrowSupplierId,
     });
     this.formVisible.set(true);
   }
@@ -249,9 +249,9 @@ export class ContractsPage implements OnInit {
       sceFeePercentage: Number(value.sceFeePercentage),
       moatamedFeePercentage: Number(value.moatamedFeePercentage),
       vatPercentage: Number(value.vatPercentage),
-      // escrowAccountId: value.customerEscrowAccountId,
-      customerEscrowAccountId: value.customerEscrowAccountId,
-      supplierEscrowAccountId: value.supplierEscrowAccountId,
+      // escrowAccountId: value.escrowCustomerId,
+      escrowCustomerId: value.escrowCustomerId,
+      escrowSupplierId: value.escrowSupplierId,
     };
     const request$ = this.editMode()
       ? this.api.updateContract({ ...payload, id: value.id })

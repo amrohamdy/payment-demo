@@ -37,8 +37,8 @@
             P {{ contract.penaltyPercentage }}% · SCE {{ contract.sceFeePercentage }}% · VAT
             {{ contract.vatPercentage }}%
           </td>
-          <td>{{ escrowName(contract.customerEscrowAccountId) }}</td>
-          <td>{{ escrowName(contract.supplierEscrowAccountId) }}</td>
+          <td>{{ escrowName(contract.escrowCustomerId) }}</td>
+          <td>{{ escrowName(contract.escrowSupplierId) }}</td>
           <td>
             <div class="actions">
               <p-button
@@ -128,7 +128,7 @@
       <label>
         <span>Customer account</span>
         <p-select
-          formControlName="customerEscrowAccountId"
+          formControlName="escrowCustomerId"
           [options]="customerAccounts()"
           optionLabel="name"
           optionValue="id"
@@ -150,7 +150,7 @@
       <label>
         <span>Supplier account</span>
         <p-select
-          formControlName="supplierEscrowAccountId"
+          formControlName="escrowSupplierId"
           [options]="supplierAccounts()"
           optionLabel="name"
           optionValue="id"

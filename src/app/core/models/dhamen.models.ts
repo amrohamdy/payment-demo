@@ -57,8 +57,8 @@ export interface Contract {
   moatamedFeePercentage: number;
   vatPercentage: number;
   // escrowAccountId: string | null;
-  customerEscrowAccountId: string | null;
-  supplierEscrowAccountId: string | null;
+  escrowCustomerId: string | null;
+  escrowSupplierId: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -176,8 +176,8 @@ export interface CreateContractRequest {
   sceFeePercentage: number;
   moatamedFeePercentage: number;
   vatPercentage: number;
-  customerEscrowAccountId?: string | null;
-  supplierEscrowAccountId?: string | null;
+  escrowCustomerId?: string | null;
+  escrowSupplierId?: string | null;
 }
 
 export interface UpdateContractRequest extends CreateContractRequest {

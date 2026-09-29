@@ -721,13 +721,13 @@ export class HttpDhamenApi implements DhamenApi {
         readNumber(r, 'moatamedFeePercentage') || fallback?.moatamedFeePercentage || 0,
       vatPercentage: readNumber(r, 'vatPercentage') || fallback?.vatPercentage || 0,
       // escrowAccountId: readNullableString(r, 'escrowAccountId') ?? fallback?.escrowAccountId ?? null,
-      customerEscrowAccountId:
-        readNullableString(r, 'customerEscrowAccountId') ??
-        fallback?.customerEscrowAccountId ??
+      escrowCustomerId:
+        readNullableString(r, 'escrowCustomerId') ??
+        fallback?.escrowCustomerId ??
         readNullableString(r, 'escrowAccountId'),
-      supplierEscrowAccountId:
-        readNullableString(r, 'supplierEscrowAccountId') ??
-        fallback?.supplierEscrowAccountId ??
+      escrowSupplierId:
+        readNullableString(r, 'escrowSupplierId') ??
+        fallback?.escrowSupplierId ??
         null,
       createdAt: readString(r, 'createdAt') || undefined,
       updatedAt: readString(r, 'updatedAt') || undefined,
