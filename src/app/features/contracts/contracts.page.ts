@@ -177,17 +177,16 @@ export class ContractsPage implements OnInit {
     // Loaded separately so the Customer/Supplier account lists still fill if contracts fail.
     this.api.listEscrowAccounts({ page: 1, pageSize: 100 }).subscribe({
       next: (escrow) => this.escrowAccounts.set(escrow.items),
-      error: (err: Error) =>
-        this.messages.add({ severity: 'error', summary: 'Escrow accounts', detail: err.message }),
+      // HTTP errors already toasted by dhamenHttpInterceptor
     });
     this.api.listContracts({ page: 1, pageSize: 100 }).subscribe({
       next: (contracts) => {
         this.contracts.set(contracts.items);
         this.loading.set(false);
       },
-      error: (err: Error) => {
+      error: () => {
         this.loading.set(false);
-        this.messages.add({ severity: 'error', summary: 'Contracts', detail: err.message });
+        // HTTP errors already toasted by dhamenHttpInterceptor
       },
     });
   }
@@ -265,9 +264,9 @@ export class ContractsPage implements OnInit {
         this.messages.add({ severity: 'success', summary: 'Saved', detail: 'Contract saved.' });
         this.reload();
       },
-      error: (err: Error) => {
+      error: () => {
         this.saving.set(false);
-        this.messages.add({ severity: 'error', summary: 'Save failed', detail: err.message });
+        // HTTP errors already toasted by dhamenHttpInterceptor
       },
     });
   }
@@ -282,8 +281,7 @@ export class ContractsPage implements OnInit {
   reloadSchedule(contractId: string): void {
     this.api.listPaymentScheduleLines({ contractId, page: 1, pageSize: 100 }).subscribe({
       next: (page) => this.scheduleLines.set(page.items),
-      error: (err: Error) =>
-        this.messages.add({ severity: 'error', summary: 'Error', detail: err.message }),
+      // HTTP errors already toasted by dhamenHttpInterceptor
     });
   }
 
@@ -388,9 +386,9 @@ export class ContractsPage implements OnInit {
         this.reloadSchedule(contract.id);
         this.openLineCreate();
       },
-      error: (err: Error) => {
+      error: () => {
         this.saving.set(false);
-        this.messages.add({ severity: 'error', summary: 'Save failed', detail: err.message });
+        // HTTP errors already toasted by dhamenHttpInterceptor
       },
     });
   }
@@ -403,8 +401,7 @@ export class ContractsPage implements OnInit {
         this.messages.add({ severity: 'success', summary: 'Deleted', detail: 'Line removed.' });
         this.reloadSchedule(contract.id);
       },
-      error: (err: Error) =>
-        this.messages.add({ severity: 'error', summary: 'Delete failed', detail: err.message }),
+      // HTTP errors already toasted by dhamenHttpInterceptor
     });
   }
 
@@ -424,8 +421,7 @@ export class ContractsPage implements OnInit {
             });
             this.reload();
           },
-          error: (err: Error) =>
-            this.messages.add({ severity: 'error', summary: 'Delete failed', detail: err.message }),
+          // HTTP errors already toasted by dhamenHttpInterceptor
         });
       },
     });
