@@ -95,7 +95,7 @@ export class HttpDhamenApi implements DhamenApi {
           customerId,
           message: readString(r, 'message') || 'Customer created successfully.',
         };
-      })
+      }),
     );
   }
 
@@ -107,7 +107,7 @@ export class HttpDhamenApi implements DhamenApi {
           customerId: readString(r, 'customerId', 'id') || body.customerId,
           message: readString(r, 'message') || 'Customer updated successfully.',
         };
-      })
+      }),
     );
   }
 
@@ -122,20 +122,20 @@ export class HttpDhamenApi implements DhamenApi {
           newBalance: Number(r['newBalance'] ?? r['balance'] ?? 0),
           message: readString(r, 'message') || 'Deposit completed successfully.',
         };
-      })
+      }),
     );
   }
 
   getCustomerBalance(customerId: string): Observable<BalanceResponse> {
-    return this.http.get(this.url(`/customers/${customerId}/balance`)).pipe(
-      map((res) => this.mapBalance(res, customerId))
-    );
+    return this.http
+      .get(this.url(`/customers/${customerId}/balance`))
+      .pipe(map((res) => this.mapBalance(res, customerId)));
   }
 
   listCustomers(query?: PageQuery): Observable<PagedResult<Customer>> {
-    return this.http.get(this.url('/customers'), { params: this.pageParams(query) }).pipe(
-      map((res) => this.mapPaged(res, (item) => this.mapCustomer(item)))
-    );
+    return this.http
+      .get(this.url('/customers'), { params: this.pageParams(query) })
+      .pipe(map((res) => this.mapPaged(res, (item) => this.mapCustomer(item))));
   }
 
   getCustomer(customerId: string): Observable<Customer> {
@@ -146,7 +146,7 @@ export class HttpDhamenApi implements DhamenApi {
           throw Object.assign(new Error('Customer not found.'), { status: 404 });
         }
         return found;
-      })
+      }),
     );
   }
 
@@ -161,7 +161,7 @@ export class HttpDhamenApi implements DhamenApi {
           supplierId,
           message: readString(r, 'message') || 'Supplier created successfully.',
         };
-      })
+      }),
     );
   }
 
@@ -173,7 +173,7 @@ export class HttpDhamenApi implements DhamenApi {
           supplierId: readString(r, 'supplierId', 'id') || body.supplierId,
           message: readString(r, 'message') || 'Supplier updated successfully.',
         };
-      })
+      }),
     );
   }
 
@@ -184,7 +184,7 @@ export class HttpDhamenApi implements DhamenApi {
         this.pushActivity(
           'supplier.payment',
           body.paymentReferenceId,
-          `Supplier payout ${body.paymentReferenceId}`
+          `Supplier payout ${body.paymentReferenceId}`,
         );
         const linesRaw = Array.isArray(r['lines']) ? r['lines'] : body.supplierPayments;
         return {
@@ -203,19 +203,19 @@ export class HttpDhamenApi implements DhamenApi {
             };
           }),
         };
-      })
+      }),
     );
   }
 
   getSupplierBalance(supplierId: string): Observable<BalanceResponse> {
-    return this.http.get(this.url(`/suppliers/${supplierId}/balance`)).pipe(
-      map((res) => this.mapBalance(res, supplierId))
-    );
+    return this.http
+      .get(this.url(`/suppliers/${supplierId}/balance`))
+      .pipe(map((res) => this.mapBalance(res, supplierId)));
   }
 
   getSupplierPaymentStatus(
     supplierId: string,
-    paymentReferenceId: string
+    paymentReferenceId: string,
   ): Observable<PaymentStatusResponse> {
     return this.http
       .get(this.url(`/suppliers/${supplierId}/payments/${paymentReferenceId}/status`))
@@ -230,14 +230,14 @@ export class HttpDhamenApi implements DhamenApi {
             updatedAt: readString(r, 'updatedAt') || new Date().toISOString(),
             message: readString(r, 'message'),
           };
-        })
+        }),
       );
   }
 
   listSuppliers(query?: PageQuery): Observable<PagedResult<Supplier>> {
-    return this.http.get(this.url('/suppliers'), { params: this.pageParams(query) }).pipe(
-      map((res) => this.mapPaged(res, (item) => this.mapSupplier(item)))
-    );
+    return this.http
+      .get(this.url('/suppliers'), { params: this.pageParams(query) })
+      .pipe(map((res) => this.mapPaged(res, (item) => this.mapSupplier(item))));
   }
 
   getSupplier(supplierId: string): Observable<Supplier> {
@@ -248,37 +248,39 @@ export class HttpDhamenApi implements DhamenApi {
           throw Object.assign(new Error('Supplier not found.'), { status: 404 });
         }
         return found;
-      })
+      }),
     );
   }
 
   // —— Escrow ——
   createEscrowAccount(body: CreateEscrowAccountRequest): Observable<EscrowAccount> {
-    return this.http.post(this.url('/escrow-accounts'), body).pipe(
-      map((res) => this.mapEscrow(res, body))
-    );
+    return this.http
+      .post(this.url('/escrow-accounts'), body)
+      .pipe(map((res) => this.mapEscrow(res, body)));
   }
 
   updateEscrowAccount(body: UpdateEscrowAccountRequest): Observable<EscrowAccount | void> {
-    return this.http.put(this.url('/escrow-accounts'), body, { observe: 'response' }).pipe(
-      map((res) => (res.body ? this.mapEscrow(res.body, body) : undefined))
-    );
+    return this.http
+      .put(this.url('/escrow-accounts'), body, { observe: 'response' })
+      .pipe(map((res) => (res.body ? this.mapEscrow(res.body, body) : undefined)));
   }
 
   listEscrowAccounts(query?: PageQuery): Observable<PagedResult<EscrowAccount>> {
-    return this.http.get(this.url('/escrow-accounts'), { params: this.pageParams(query) }).pipe(
-      map((res) => this.mapPaged(res, (item) => this.mapEscrow(item)))
-    );
+    return this.http
+      .get(this.url('/escrow-accounts'), { params: this.pageParams(query) })
+      .pipe(map((res) => this.mapPaged(res, (item) => this.mapEscrow(item))));
   }
 
   getEscrowAccount(id: string): Observable<EscrowAccount> {
-    return this.http.get(this.url(`/escrow-accounts/${id}`)).pipe(map((res) => this.mapEscrow(res)));
+    return this.http
+      .get(this.url(`/escrow-accounts/${id}`))
+      .pipe(map((res) => this.mapEscrow(res)));
   }
 
   deleteEscrowAccount(id: string): Observable<void> {
-    return this.http.delete(this.url(`/escrow-accounts/${id}`), { observe: 'response' }).pipe(
-      map(() => undefined)
-    );
+    return this.http
+      .delete(this.url(`/escrow-accounts/${id}`), { observe: 'response' })
+      .pipe(map(() => undefined));
   }
 
   // —— Contracts ——
@@ -288,20 +290,20 @@ export class HttpDhamenApi implements DhamenApi {
         const mapped = this.mapContract(res, body);
         this.pushActivity('contract.create', mapped.id, `Contract ${mapped.contractNumber}`);
         return mapped;
-      })
+      }),
     );
   }
 
   updateContract(body: UpdateContractRequest): Observable<Contract | void> {
-    return this.http.put(this.url('/contracts'), body, { observe: 'response' }).pipe(
-      map((res) => (res.body ? this.mapContract(res.body, body) : undefined))
-    );
+    return this.http
+      .put(this.url('/contracts'), body, { observe: 'response' })
+      .pipe(map((res) => (res.body ? this.mapContract(res.body, body) : undefined)));
   }
 
   listContracts(query?: PageQuery): Observable<PagedResult<Contract>> {
-    return this.http.get(this.url('/contracts'), { params: this.pageParams(query) }).pipe(
-      map((res) => this.mapPaged(res, (item) => this.mapContract(item)))
-    );
+    return this.http
+      .get(this.url('/contracts'), { params: this.pageParams(query) })
+      .pipe(map((res) => this.mapPaged(res, (item) => this.mapContract(item))));
   }
 
   getContract(id: string): Observable<Contract> {
@@ -309,38 +311,38 @@ export class HttpDhamenApi implements DhamenApi {
   }
 
   deleteContract(id: string): Observable<void> {
-    return this.http.delete(this.url(`/contracts/${id}`), { observe: 'response' }).pipe(
-      map(() => undefined)
-    );
+    return this.http
+      .delete(this.url(`/contracts/${id}`), { observe: 'response' })
+      .pipe(map(() => undefined));
   }
 
   // —— Schedule lines ——
   createPaymentScheduleLine(
-    body: CreatePaymentScheduleLineRequest
+    body: CreatePaymentScheduleLineRequest,
   ): Observable<PaymentScheduleLine> {
-    return this.http.post(this.url('/payment-schedule-lines'), body).pipe(
-      map((res) => this.mapScheduleLine(res, body))
-    );
+    return this.http
+      .post(this.url('/payment-schedule-lines'), body)
+      .pipe(map((res) => this.mapScheduleLine(res, body)));
   }
 
   updatePaymentScheduleLine(
-    body: UpdatePaymentScheduleLineRequest
+    body: UpdatePaymentScheduleLineRequest,
   ): Observable<PaymentScheduleLine | void> {
-    return this.http.put(this.url('/payment-schedule-lines'), body, { observe: 'response' }).pipe(
-      map((res) => (res.body ? this.mapScheduleLine(res.body, body) : undefined))
-    );
+    return this.http
+      .put(this.url('/payment-schedule-lines'), body, { observe: 'response' })
+      .pipe(map((res) => (res.body ? this.mapScheduleLine(res.body, body) : undefined)));
   }
 
   listPaymentScheduleLines(
-    query?: PageQuery & { contractId?: string }
+    query?: PageQuery & { contractId?: string },
   ): Observable<PagedResult<PaymentScheduleLine>> {
     let params = this.pageParams(query);
     if (query?.contractId) {
       params = params.set('contractId', query.contractId);
     }
-    return this.http.get(this.url('/payment-schedule-lines'), { params }).pipe(
-      map((res) => this.mapPaged(res, (item) => this.mapScheduleLine(item)))
-    );
+    return this.http
+      .get(this.url('/payment-schedule-lines'), { params })
+      .pipe(map((res) => this.mapPaged(res, (item) => this.mapScheduleLine(item))));
   }
 
   getPaymentScheduleLine(id: string): Observable<PaymentScheduleLine> {
@@ -362,52 +364,52 @@ export class HttpDhamenApi implements DhamenApi {
         const mapped = this.mapRelease(res, body);
         this.pushActivity('release.create', mapped.id, `Release request ${mapped.requestedAmount}`);
         return mapped;
-      })
+      }),
     );
   }
 
   updateReleaseRequest(body: UpdateReleaseRequestRequest): Observable<ReleaseRequest | void> {
-    return this.http.put(this.url('/release-requests'), body, { observe: 'response' }).pipe(
-      map((res) => (res.body ? this.mapRelease(res.body, body) : undefined))
-    );
+    return this.http
+      .put(this.url('/release-requests'), body, { observe: 'response' })
+      .pipe(map((res) => (res.body ? this.mapRelease(res.body, body) : undefined)));
   }
 
   listReleaseRequests(query?: PageQuery): Observable<PagedResult<ReleaseRequest>> {
-    return this.http.get(this.url('/release-requests'), { params: this.pageParams(query) }).pipe(
-      map((res) => this.mapPaged(res, (item) => this.mapRelease(item)))
-    );
+    return this.http
+      .get(this.url('/release-requests'), { params: this.pageParams(query) })
+      .pipe(map((res) => this.mapPaged(res, (item) => this.mapRelease(item))));
   }
 
   getReleaseRequest(id: string): Observable<ReleaseRequest> {
-    return this.http.get(this.url(`/release-requests/${id}`)).pipe(map((res) => this.mapRelease(res)));
+    return this.http
+      .get(this.url(`/release-requests/${id}`))
+      .pipe(map((res) => this.mapRelease(res)));
   }
 
   deleteReleaseRequest(id: string): Observable<void> {
-    return this.http.delete(this.url(`/release-requests/${id}`), { observe: 'response' }).pipe(
-      map(() => undefined)
-    );
+    return this.http
+      .delete(this.url(`/release-requests/${id}`), { observe: 'response' })
+      .pipe(map(() => undefined));
   }
 
   // —— Penalties ——
   createReleaseRequestPenalty(
-    body: CreateReleaseRequestPenaltyRequest
+    body: CreateReleaseRequestPenaltyRequest,
   ): Observable<ReleaseRequestPenalty> {
-    return this.http.post(this.url('/release-request-penalties'), body).pipe(
-      map((res) => this.mapPenalty(res, body))
-    );
+    return this.http
+      .post(this.url('/release-request-penalties'), body)
+      .pipe(map((res) => this.mapPenalty(res, body)));
   }
 
   updateReleaseRequestPenalty(
-    body: UpdateReleaseRequestPenaltyRequest
+    body: UpdateReleaseRequestPenaltyRequest,
   ): Observable<ReleaseRequestPenalty | void> {
     return this.http
       .put(this.url('/release-request-penalties'), body, { observe: 'response' })
       .pipe(map((res) => (res.body ? this.mapPenalty(res.body, body) : undefined)));
   }
 
-  listReleaseRequestPenalties(
-    query?: PageQuery
-  ): Observable<PagedResult<ReleaseRequestPenalty>> {
+  listReleaseRequestPenalties(query?: PageQuery): Observable<PagedResult<ReleaseRequestPenalty>> {
     return this.http
       .get(this.url('/release-request-penalties'), { params: this.pageParams(query) })
       .pipe(map((res) => this.mapPaged(res, (item) => this.mapPenalty(item))));
@@ -432,30 +434,32 @@ export class HttpDhamenApi implements DhamenApi {
         const mapped = this.mapPaymentLink(res, body);
         this.pushActivity('payment-link.create', mapped.paymentReferenceId, 'Payment link created');
         return mapped;
-      })
+      }),
     );
   }
 
   updatePaymentLink(body: UpdatePaymentLinkRequest): Observable<PaymentLink | void> {
-    return this.http.put(this.url('/payment-links'), body, { observe: 'response' }).pipe(
-      map((res) => (res.body ? this.mapPaymentLink(res.body, body) : undefined))
-    );
+    return this.http
+      .put(this.url('/payment-links'), body, { observe: 'response' })
+      .pipe(map((res) => (res.body ? this.mapPaymentLink(res.body, body) : undefined)));
   }
 
   listPaymentLinks(query?: PageQuery): Observable<PagedResult<PaymentLink>> {
-    return this.http.get(this.url('/payment-links'), { params: this.pageParams(query) }).pipe(
-      map((res) => this.mapPaged(res, (item) => this.mapPaymentLink(item)))
-    );
+    return this.http
+      .get(this.url('/payment-links'), { params: this.pageParams(query) })
+      .pipe(map((res) => this.mapPaged(res, (item) => this.mapPaymentLink(item))));
   }
 
   getPaymentLink(id: string): Observable<PaymentLink> {
-    return this.http.get(this.url(`/payment-links/${id}`)).pipe(map((res) => this.mapPaymentLink(res)));
+    return this.http
+      .get(this.url(`/payment-links/${id}`))
+      .pipe(map((res) => this.mapPaymentLink(res)));
   }
 
   deletePaymentLink(id: string): Observable<void> {
-    return this.http.delete(this.url(`/payment-links/${id}`), { observe: 'response' }).pipe(
-      map(() => undefined)
-    );
+    return this.http
+      .delete(this.url(`/payment-links/${id}`), { observe: 'response' })
+      .pipe(map(() => undefined));
   }
 
   // —— Payments lifecycle ——
@@ -473,7 +477,7 @@ export class HttpDhamenApi implements DhamenApi {
 
   getPaymentStatus(
     paymentReferenceId: string,
-    customerIdentifier?: string | null
+    customerIdentifier?: string | null,
   ): Observable<PaymentStatusResponse> {
     let params = new HttpParams().set('paymentReferenceId', paymentReferenceId);
     if (customerIdentifier) {
@@ -488,9 +492,10 @@ export class HttpDhamenApi implements DhamenApi {
           amount: readNumber(r, 'amount'),
           updatedAt: readString(r, 'updatedAt') || new Date().toISOString(),
           message: readString(r, 'message'),
-          customerIdentifier: readString(r, 'customerIdentifier') || customerIdentifier || undefined,
+          customerIdentifier:
+            readString(r, 'customerIdentifier') || customerIdentifier || undefined,
         };
-      })
+      }),
     );
   }
 
@@ -507,17 +512,27 @@ export class HttpDhamenApi implements DhamenApi {
   }
 
   refundToIban(body: RefundToIbanRequest): Observable<MutationResponse> {
-    return this.mutate('/payments/refund/iban', body, 'payment.refund-iban', body.paymentReferenceId);
+    return this.mutate(
+      '/payments/refund/iban',
+      body,
+      'payment.refund-iban',
+      body.paymentReferenceId,
+    );
   }
 
   cancelPaymentLink(body: CancelPaymentLinkRequest): Observable<MutationResponse> {
-    return this.mutate('/payments/cancel-link', body, 'payment.cancel-link', body.paymentReferenceId);
+    return this.mutate(
+      '/payments/cancel-link',
+      body,
+      'payment.cancel-link',
+      body.paymentReferenceId,
+    );
   }
 
   getAuthorityBalance(authorityProfileId: string): Observable<BalanceResponse> {
-    return this.http.get(this.url(`/authority/${authorityProfileId}/balance`)).pipe(
-      map((res) => this.mapBalance(res, authorityProfileId))
-    );
+    return this.http
+      .get(this.url(`/authority/${authorityProfileId}/balance`))
+      .pipe(map((res) => this.mapBalance(res, authorityProfileId)));
   }
 
   // —— Demo helpers ——
@@ -542,30 +557,32 @@ export class HttpDhamenApi implements DhamenApi {
           throw Object.assign(new Error('Payment reference not found.'), { status: 404 });
         }
         return found;
-      })
+      }),
     );
   }
 
   getDashboardStats(): Observable<DashboardStats> {
-    return this.http.get(this.url('/customers'), { params: this.pageParams({ page: 1, pageSize: 1 }) }).pipe(
-      map((customersRes) => {
-        const customersCount = readTotalCount(customersRes, unwrapItems(customersRes).length);
-        return customersCount;
-      }),
-      // Aggregate lightly — full counts fetched in parallel by callers when needed.
-      catchError(() => of(0)),
-      map((customersCount) => ({
-        customersCount,
-        suppliersCount: 0,
-        customersBalanceTotal: 0,
-        suppliersBalanceTotal: 0,
-        paymentsCount: this.readActivity().length,
-        contractsCount: 0,
-        releaseRequestsCount: 0,
-        paymentLinksCount: 0,
-        latestPayment: null,
-      }))
-    );
+    return this.http
+      .get(this.url('/customers'), { params: this.pageParams({ page: 1, pageSize: 1 }) })
+      .pipe(
+        map((customersRes) => {
+          const customersCount = readTotalCount(customersRes, unwrapItems(customersRes).length);
+          return customersCount;
+        }),
+        // Aggregate lightly — full counts fetched in parallel by callers when needed.
+        catchError(() => of(0)),
+        map((customersCount) => ({
+          customersCount,
+          suppliersCount: 0,
+          customersBalanceTotal: 0,
+          suppliersBalanceTotal: 0,
+          paymentsCount: this.readActivity().length,
+          contractsCount: 0,
+          releaseRequestsCount: 0,
+          paymentLinksCount: 0,
+          latestPayment: null,
+        })),
+      );
   }
 
   listActivity(): Observable<DemoActivityEntry[]> {
@@ -583,9 +600,9 @@ export class HttpDhamenApi implements DhamenApi {
       catchError(() =>
         this.http.get(this.url('/customers'), { params: { page: '1', pageSize: '1' } }).pipe(
           map(() => true),
-          catchError(() => of(false))
-        )
-      )
+          catchError(() => of(false)),
+        ),
+      ),
     );
   }
 
@@ -604,7 +621,7 @@ export class HttpDhamenApi implements DhamenApi {
     path: string,
     body: unknown,
     kind: string,
-    reference: string | null | undefined
+    reference: string | null | undefined,
   ): Observable<MutationResponse> {
     return this.http.post(this.url(path), body).pipe(
       map((res) => {
@@ -615,7 +632,7 @@ export class HttpDhamenApi implements DhamenApi {
           id,
           message: readString(r, 'message') || 'Request completed successfully.',
         };
-      })
+      }),
     );
   }
 
@@ -671,11 +688,16 @@ export class HttpDhamenApi implements DhamenApi {
     };
   }
 
-  private mapEscrow(item: unknown, fallback?: Partial<CreateEscrowAccountRequest & { id?: string }>): EscrowAccount {
+  private mapEscrow(
+    item: unknown,
+    fallback?: Partial<CreateEscrowAccountRequest & { id?: string }>,
+  ): EscrowAccount {
     const r = asRecord(item);
     return {
       id: readString(r, 'id') || fallback?.id || '',
-      holderType: (holderTypeLabel(r['holderType'] ?? fallback?.holderType) as EscrowAccount['holderType']) || 'Authority',
+      holderType:
+        (holderTypeLabel(r['holderType'] ?? fallback?.holderType) as EscrowAccount['holderType']) ||
+        'Authority',
       name: readString(r, 'name') || fallback?.name || '',
       viban: readString(r, 'viban') || fallback?.viban || '',
       bban: readString(r, 'bban') || fallback?.bban || '',
@@ -684,7 +706,10 @@ export class HttpDhamenApi implements DhamenApi {
     };
   }
 
-  private mapContract(item: unknown, fallback?: Partial<CreateContractRequest & { id?: string }>): Contract {
+  private mapContract(
+    item: unknown,
+    fallback?: Partial<CreateContractRequest & { id?: string }>,
+  ): Contract {
     const r = asRecord(item);
     return {
       id: readString(r, 'id') || fallback?.id || '',
@@ -692,9 +717,18 @@ export class HttpDhamenApi implements DhamenApi {
       totalAmount: readNumber(r, 'totalAmount') || fallback?.totalAmount || 0,
       penaltyPercentage: readNumber(r, 'penaltyPercentage') || fallback?.penaltyPercentage || 0,
       sceFeePercentage: readNumber(r, 'sceFeePercentage') || fallback?.sceFeePercentage || 0,
-      moatamedFeePercentage: readNumber(r, 'moatamedFeePercentage') || fallback?.moatamedFeePercentage || 0,
+      moatamedFeePercentage:
+        readNumber(r, 'moatamedFeePercentage') || fallback?.moatamedFeePercentage || 0,
       vatPercentage: readNumber(r, 'vatPercentage') || fallback?.vatPercentage || 0,
-      escrowAccountId: readNullableString(r, 'escrowAccountId') ?? fallback?.escrowAccountId ?? null,
+      // escrowAccountId: readNullableString(r, 'escrowAccountId') ?? fallback?.escrowAccountId ?? null,
+      customerEscrowAccountId:
+        readNullableString(r, 'customerEscrowAccountId') ??
+        fallback?.customerEscrowAccountId ??
+        readNullableString(r, 'escrowAccountId'),
+      supplierEscrowAccountId:
+        readNullableString(r, 'supplierEscrowAccountId') ??
+        fallback?.supplierEscrowAccountId ??
+        null,
       createdAt: readString(r, 'createdAt') || undefined,
       updatedAt: readString(r, 'updatedAt') || undefined,
     };
@@ -702,7 +736,7 @@ export class HttpDhamenApi implements DhamenApi {
 
   private mapScheduleLine(
     item: unknown,
-    fallback?: Partial<CreatePaymentScheduleLineRequest & { id?: string }>
+    fallback?: Partial<CreatePaymentScheduleLineRequest & { id?: string }>,
   ): PaymentScheduleLine {
     const r = asRecord(item);
     return {
@@ -713,7 +747,8 @@ export class HttpDhamenApi implements DhamenApi {
       percentage: readNumber(r, 'percentage') || fallback?.percentage || 0,
       amount: readNumber(r, 'amount') || fallback?.amount || 0,
       dueDate: readString(r, 'dueDate') || fallback?.dueDate || '',
-      escrowAccountId: readNullableString(r, 'escrowAccountId') ?? fallback?.escrowAccountId ?? null,
+      // escrowAccountId:
+      //   readNullableString(r, 'escrowAccountId') ?? fallback?.escrowAccountId ?? null,
       createdAt: readString(r, 'createdAt') || undefined,
       updatedAt: readString(r, 'updatedAt') || undefined,
     };
@@ -721,7 +756,7 @@ export class HttpDhamenApi implements DhamenApi {
 
   private mapRelease(
     item: unknown,
-    fallback?: Partial<CreateReleaseRequestRequest & { id?: string }>
+    fallback?: Partial<CreateReleaseRequestRequest & { id?: string }>,
   ): ReleaseRequest {
     const r = asRecord(item);
     return {
@@ -738,7 +773,7 @@ export class HttpDhamenApi implements DhamenApi {
 
   private mapPenalty(
     item: unknown,
-    fallback?: Partial<CreateReleaseRequestPenaltyRequest & { id?: string }>
+    fallback?: Partial<CreateReleaseRequestPenaltyRequest & { id?: string }>,
   ): ReleaseRequestPenalty {
     const r = asRecord(item);
     return {
@@ -755,7 +790,7 @@ export class HttpDhamenApi implements DhamenApi {
 
   private mapPaymentLink(
     item: unknown,
-    fallback?: Partial<CreatePaymentLinkRequest & { id?: string }>
+    fallback?: Partial<CreatePaymentLinkRequest & { id?: string }>,
   ): PaymentLink {
     const r = asRecord(item);
     return {

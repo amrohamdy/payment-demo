@@ -1,4 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Button } from 'primeng/button';
 import { Checkbox } from 'primeng/checkbox';
@@ -113,6 +114,15 @@ export class ReleaseRequestsPage implements OnInit {
     reason: [''],
   });
 
+  constructor() {
+    // Picking a schedule line fills Requested amount with that line's amount.
+    const { scheduleLineId, requestedAmount } = this.form.controls;
+    scheduleLineId.valueChanges.pipe(takeUntilDestroyed()).subscribe((id) => {
+      if (!scheduleLineId.dirty) return;
+      requestedAmount.setValue(id ? this.lineAmount(id) : null);
+    });
+  }
+
   ngOnInit(): void {
     this.reload();
   }
@@ -160,11 +170,12 @@ export class ReleaseRequestsPage implements OnInit {
   openCreate(): void {
     this.editMode.set(false);
     this.selected.set(null);
+    const firstLineId = this.availableLines()[0]?.id ?? null;
     this.form.reset({
       id: '',
-      scheduleLineId: this.availableLines()[0]?.id ?? null,
+      scheduleLineId: firstLineId,
       requestDate: new Date().toISOString().slice(0, 10),
-      requestedAmount: null,
+      requestedAmount: firstLineId ? this.lineAmount(firstLineId) : null,
       hasPenalty: false,
       status: 'Pending',
     });

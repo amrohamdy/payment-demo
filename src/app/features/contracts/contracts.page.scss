@@ -86,3 +86,13 @@
     grid-template-columns: 1fr;
   }
 }
+
+.account-option {
+  display: grid;
+  line-height: 1.25;
+
+  small {
+    color: var(--dh-muted);
+    font-size: 0.72rem;
+  }
+}
