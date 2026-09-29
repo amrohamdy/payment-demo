@@ -1,5 +1,5 @@
 {
-  "baseUrl": "https://localhost:7134",
+  "baseUrl": "https://payments-dev.nonprod.umrantech.sa",
   "currency": "SAR",
   "authorityProfileId": null
 }
