@@ -70,7 +70,10 @@ export class DemoWizardPage implements OnInit {
     iban: ['', [Validators.required, saudiIbanValidator()]],
     email: ['', [Validators.required, Validators.email]],
     mobile: ['', [Validators.required, saudiMobileValidator()]],
-    depositAmount: this.fb.nonNullable.control(1000, [Validators.required, positiveAmountValidator()]),
+    depositAmount: this.fb.nonNullable.control(1000, [
+      Validators.required,
+      positiveAmountValidator(),
+    ]),
   });
 
   readonly supplierForm = this.fb.nonNullable.group({
@@ -93,7 +96,10 @@ export class DemoWizardPage implements OnInit {
 
   readonly contractForm = this.fb.nonNullable.group({
     contractNumber: ['', Validators.required],
-    totalAmount: this.fb.nonNullable.control(1000, [Validators.required, positiveAmountValidator()]),
+    totalAmount: this.fb.nonNullable.control(1000, [
+      Validators.required,
+      positiveAmountValidator(),
+    ]),
     penaltyPercentage: this.fb.nonNullable.control(2, percentageRangeValidator()),
     sceFeePercentage: this.fb.nonNullable.control(1, percentageRangeValidator()),
     moatamedFeePercentage: this.fb.nonNullable.control(0.5, percentageRangeValidator()),
@@ -154,14 +160,18 @@ export class DemoWizardPage implements OnInit {
         switchMap((deposit) => {
           this.customerBalance.set(deposit.newBalance);
           return this.api.createSupplier(this.supplierForm.getRawValue());
-        })
+        }),
       )
       .subscribe({
         next: (supplier) => {
           this.busy.set(false);
           this.supplierId.set(supplier.supplierId);
           this.note(`Supplier ${supplier.supplierId}`);
-          this.messages.add({ severity: 'success', summary: 'Parties ready', detail: 'Customer funded + supplier created' });
+          this.messages.add({
+            severity: 'success',
+            summary: 'Parties ready',
+            detail: 'Customer funded + supplier created',
+          });
           this.next();
         },
         error: (err: Error) => {
@@ -208,7 +218,7 @@ export class DemoWizardPage implements OnInit {
       .createContract({
         ...this.contractForm.getRawValue(),
         totalAmount: total,
-        escrowAccountId: this.escrowId(),
+        // escrowAccountId: this.escrowId(),
       })
       .pipe(
         switchMap((contract) => {
@@ -222,9 +232,9 @@ export class DemoWizardPage implements OnInit {
             percentage: 100,
             amount: total,
             dueDate: due,
-            escrowAccountId: this.escrowId(),
+            // escrowAccountId: this.escrowId(),
           });
-        })
+        }),
       )
       .subscribe({
         next: (line) => {
@@ -277,7 +287,7 @@ export class DemoWizardPage implements OnInit {
             requestId: createUuid(),
             amount,
           });
-        })
+        }),
       )
       .subscribe({
         next: (capture) => {
@@ -310,7 +320,11 @@ export class DemoWizardPage implements OnInit {
           this.busy.set(false);
           this.releaseId.set(release.id);
           this.note(`Release ${release.id} Approved`);
-          this.messages.add({ severity: 'success', summary: 'Release', detail: 'Approved release request' });
+          this.messages.add({
+            severity: 'success',
+            summary: 'Release',
+            detail: 'Approved release request',
+          });
           this.next();
         },
         error: (err: Error) => {
@@ -350,7 +364,7 @@ export class DemoWizardPage implements OnInit {
         switchMap((customerBal) => {
           this.customerBalance.set(customerBal.balance);
           return this.api.getSupplierBalance(supplierId);
-        })
+        }),
       )
       .subscribe({
         next: (supplierBal) => {

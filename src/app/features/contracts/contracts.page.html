@@ -10,7 +10,10 @@
 @if (loading()) {
   <div class="loading-wrap"><p-progressSpinner strokeWidth="4" /></div>
 } @else if (contracts().length === 0) {
-  <app-empty-state title="No contracts" message="Create a contract after setting up an escrow account.">
+  <app-empty-state
+    title="No contracts"
+    message="Create a contract after setting up an escrow account."
+  >
     <p-button label="Create contract" icon="pi pi-plus" (onClick)="openCreate()" />
   </app-empty-state>
 } @else {
@@ -21,7 +24,8 @@
           <th>Number</th>
           <th>Total</th>
           <th>Fees</th>
-          <th>Escrow</th>
+          <th>Customer account</th>
+          <th>Supplier account</th>
           <th>Actions</th>
         </tr>
       </ng-template>
@@ -33,11 +37,22 @@
             P {{ contract.penaltyPercentage }}% · SCE {{ contract.sceFeePercentage }}% · VAT
             {{ contract.vatPercentage }}%
           </td>
-          <td>{{ escrowName(contract.escrowAccountId) }}</td>
+          <td>{{ escrowName(contract.customerEscrowAccountId) }}</td>
+          <td>{{ escrowName(contract.supplierEscrowAccountId) }}</td>
           <td>
             <div class="actions">
-              <p-button icon="pi pi-list" [rounded]="true" [text]="true" (onClick)="openSchedule(contract)" />
-              <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" (onClick)="openEdit(contract)" />
+              <p-button
+                icon="pi pi-list"
+                [rounded]="true"
+                [text]="true"
+                (onClick)="openSchedule(contract)"
+              />
+              <p-button
+                icon="pi pi-pencil"
+                [rounded]="true"
+                [text]="true"
+                (onClick)="openEdit(contract)"
+              />
               <p-button
                 icon="pi pi-trash"
                 [rounded]="true"
@@ -69,39 +84,92 @@
     </label>
     <label>
       <span>Total amount</span>
-      <p-inputNumber formControlName="totalAmount" mode="decimal" [minFractionDigits]="2" styleClass="w-100" />
+      <p-inputNumber
+        formControlName="totalAmount"
+        mode="decimal"
+        [minFractionDigits]="2"
+        styleClass="w-100"
+      />
     </label>
     <div class="grid-2">
       <label>
         <span>Penalty %</span>
-        <p-inputNumber formControlName="penaltyPercentage" [min]="0" [max]="100" styleClass="w-100" />
+        <p-inputNumber
+          formControlName="penaltyPercentage"
+          [min]="0"
+          [max]="100"
+          styleClass="w-100"
+        />
       </label>
       <label>
         <span>SCE fee %</span>
-        <p-inputNumber formControlName="sceFeePercentage" [min]="0" [max]="100" styleClass="w-100" />
+        <p-inputNumber
+          formControlName="sceFeePercentage"
+          [min]="0"
+          [max]="100"
+          styleClass="w-100"
+        />
       </label>
       <label>
         <span>Moatamed fee %</span>
-        <p-inputNumber formControlName="moatamedFeePercentage" [min]="0" [max]="100" styleClass="w-100" />
+        <p-inputNumber
+          formControlName="moatamedFeePercentage"
+          [min]="0"
+          [max]="100"
+          styleClass="w-100"
+        />
       </label>
       <label>
         <span>VAT %</span>
         <p-inputNumber formControlName="vatPercentage" [min]="0" [max]="100" styleClass="w-100" />
       </label>
     </div>
-    <label>
-      <span>Escrow account</span>
-      <p-select
-        formControlName="escrowAccountId"
-        [options]="escrowAccounts()"
-        optionLabel="name"
-        optionValue="id"
-        placeholder="Optional"
-        [showClear]="true"
-        appendTo="body"
-        styleClass="w-100"
-      />
-    </label>
+    <div class="grid-2">
+      <label>
+        <span>Customer account</span>
+        <p-select
+          formControlName="customerEscrowAccountId"
+          [options]="customerAccounts()"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Optional"
+          emptyMessage="No customer escrow accounts"
+          [showClear]="true"
+          [filter]="customerAccounts().length > 6"
+          appendTo="body"
+          styleClass="w-100"
+        >
+          <ng-template #item let-item>
+            <div class="account-option">
+              <span>{{ item.name }}</span>
+              <small class="mono">{{ item.hint }}</small>
+            </div>
+          </ng-template>
+        </p-select>
+      </label>
+      <label>
+        <span>Supplier account</span>
+        <p-select
+          formControlName="supplierEscrowAccountId"
+          [options]="supplierAccounts()"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Optional"
+          emptyMessage="No supplier escrow accounts"
+          [showClear]="true"
+          [filter]="supplierAccounts().length > 6"
+          appendTo="body"
+          styleClass="w-100"
+        >
+          <ng-template #item let-item>
+            <div class="account-option">
+              <span>{{ item.name }}</span>
+              <small class="mono">{{ item.hint }}</small>
+            </div>
+          </ng-template>
+        </p-select>
+      </label>
+    </div>
   </form>
   <ng-template #footer>
     <p-button label="Cancel" [text]="true" (onClick)="formVisible.set(false)" />
@@ -121,17 +189,25 @@
   <div class="schedule-summary">
     <div class="schedule-total">
       <span class="schedule-total__label">Contract total</span>
-      <strong>{{ (selected()?.totalAmount ?? 0) | sar }}</strong>
+      <strong>{{ selected()?.totalAmount ?? 0 | sar }}</strong>
     </div>
     <p-tag
       [severity]="schedulePercentOk() ? 'success' : schedulePercentSum() > 100 ? 'danger' : 'warn'"
       [value]="'% sum: ' + (schedulePercentSum() | number: '1.0-2') + ' / 100'"
     />
     <p-tag
-      [severity]="scheduleAmountOk() ? 'success' : scheduleAmountSum() > (selected()?.totalAmount ?? 0) ? 'danger' : 'warn'"
+      [severity]="
+        scheduleAmountOk()
+          ? 'success'
+          : scheduleAmountSum() > (selected()?.totalAmount ?? 0)
+            ? 'danger'
+            : 'warn'
+      "
       [value]="'Amount sum: ' + (scheduleAmountSum() | number: '1.2-2')"
     />
-    <span class="hint">Remaining: {{ percentRemaining() | number: '1.0-2' }}% · {{ amountRemaining() | sar }}</span>
+    <span class="hint"
+      >Remaining: {{ percentRemaining() | number: '1.0-2' }}% · {{ amountRemaining() | sar }}</span
+    >
     @if (schedulePercentSum() > 100) {
       <span class="hint warn">Percentages exceed 100%.</span>
     } @else if (!schedulePercentOk()) {
@@ -150,7 +226,7 @@
         <tr>
           <th>#</th>
           <th>Title</th>
-          <th>Supplier</th>
+          <!-- <th>Supplier</th> -->
           <th>%</th>
           <th>Amount</th>
           <th>Due</th>
@@ -161,13 +237,18 @@
         <tr>
           <td>{{ line.sequenceNo }}</td>
           <td>{{ line.title }}</td>
-          <td>{{ escrowName(line.escrowAccountId) }}</td>
+          <!-- <td>{{ escrowName(line.escrowAccountId) }}</td> -->
           <td>{{ line.percentage }}</td>
           <td>{{ line.amount | sar }}</td>
           <td>{{ line.dueDate }}</td>
           <td>
             <div class="actions">
-              <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" (onClick)="openLineEdit(line)" />
+              <p-button
+                icon="pi pi-pencil"
+                [rounded]="true"
+                [text]="true"
+                (onClick)="openLineEdit(line)"
+              />
               <p-button
                 icon="pi pi-trash"
                 [rounded]="true"
@@ -197,7 +278,7 @@
       <span>Title</span>
       <input pInputText formControlName="title" />
     </label>
-    <label>
+    <!-- <label>
       <span>Supplier</span>
       <p-select
         formControlName="escrowAccountId"
@@ -210,14 +291,17 @@
         appendTo="body"
         styleClass="w-100"
       />
-    </label>
+    </label> -->
     <div class="grid-2">
       <label>
         <span>Percentage (max {{ percentCap() | number: '1.0-2' }}%)</span>
         <p-inputNumber
           formControlName="percentage"
+          mode="decimal"
+          [maxFractionDigits]="2"
           [min]="0"
           [max]="percentCap()"
+          suffix="%"
           styleClass="w-100"
         />
       </label>

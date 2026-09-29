@@ -56,7 +56,9 @@ export interface Contract {
   sceFeePercentage: number;
   moatamedFeePercentage: number;
   vatPercentage: number;
-  escrowAccountId: string | null;
+  // escrowAccountId: string | null;
+  customerEscrowAccountId: string | null;
+  supplierEscrowAccountId: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -69,7 +71,7 @@ export interface PaymentScheduleLine {
   percentage: number;
   amount: number;
   dueDate: string;
-  escrowAccountId: string | null;
+  // escrowAccountId: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -174,7 +176,8 @@ export interface CreateContractRequest {
   sceFeePercentage: number;
   moatamedFeePercentage: number;
   vatPercentage: number;
-  escrowAccountId: string | null;
+  customerEscrowAccountId?: string | null;
+  supplierEscrowAccountId?: string | null;
 }
 
 export interface UpdateContractRequest extends CreateContractRequest {
@@ -188,7 +191,7 @@ export interface CreatePaymentScheduleLineRequest {
   percentage: number;
   amount: number;
   dueDate: string;
-  escrowAccountId: string | null;
+  // escrowAccountId: string | null;
 }
 
 export interface UpdatePaymentScheduleLineRequest {
@@ -198,7 +201,7 @@ export interface UpdatePaymentScheduleLineRequest {
   percentage: number;
   amount: number;
   dueDate: string;
-  escrowAccountId: string | null;
+  // escrowAccountId: string | null;
 }
 
 export interface CreateReleaseRequestRequest {

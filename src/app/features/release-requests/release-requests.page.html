@@ -99,7 +99,12 @@
       <input pInputText type="date" formControlName="requestDate" />
     </label>
     <label>
-      <span>Requested amount</span>
+      <span>
+        Requested amount
+        @if (form.controls.scheduleLineId.value; as lineId) {
+          (line amount {{ lineAmount(lineId) | sar }})
+        }
+      </span>
       <p-inputNumber formControlName="requestedAmount" mode="decimal" [minFractionDigits]="2" styleClass="w-100" />
     </label>
     <label>
