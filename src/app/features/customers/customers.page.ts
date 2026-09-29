@@ -161,9 +161,8 @@ export class CustomersPage implements OnInit {
         });
         this.reload();
       },
-      error: (err: Error) => {
+      error: () => {
         this.saving.set(false);
-        this.messages.add({ severity: 'error', summary: 'Save failed', detail: err.message });
       },
     });
   }
@@ -198,9 +197,8 @@ export class CustomersPage implements OnInit {
           });
           this.reload();
         },
-        error: (err: Error) => {
+        error: () => {
           this.saving.set(false);
-          this.messages.add({ severity: 'error', summary: 'Deposit failed', detail: err.message });
         },
       });
   }
@@ -215,9 +213,7 @@ export class CustomersPage implements OnInit {
         });
         this.reload();
       },
-      error: (err: Error) => {
-        this.messages.add({ severity: 'error', summary: 'Error', detail: err.message });
-      },
+      // HTTP errors already toasted by dhamenHttpInterceptor
     });
   }
 }
